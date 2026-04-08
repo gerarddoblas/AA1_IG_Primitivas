@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Archivos de origen">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Archivos de encabezado">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Archivos de recursos">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{ba9a50bf-be2d-4890-b8fe-1b08b7acc200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Geometry Shader">
+      <UniqueIdentifier>{313f563e-d060-491b-969a-9e154cf82c1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Fragment Shader">
+      <UniqueIdentifier>{bf8fd2a7-08e2-4e8f-9517-8b653a68859e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Vertex Shader">
+      <UniqueIdentifier>{e3259f3e-7828-4452-ba44-aa02a7fe5eff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MyFirstVertexShader.glsl">
+      <Filter>Shader\Vertex Shader</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="MyFirstGeometryShader.glsl">
+      <Filter>Shader\Geometry Shader</Filter>
+    </None>
+    <None Include="MyFirstFragmentShader.glsl">
+      <Filter>Shader\Fragment Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>
