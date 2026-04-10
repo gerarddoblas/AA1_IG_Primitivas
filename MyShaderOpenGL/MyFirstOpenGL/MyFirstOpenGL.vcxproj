@@ -20,6 +20,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Ortoedro.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -31,6 +32,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="Ortoedro.h" />
     <ClInclude Include="Primitive.h" />
   </ItemGroup>
