@@ -18,12 +18,14 @@ public:
 		GLuint fragmentShader = 0;
 	};
 
-	Primitive() {}
+	static std::string Load_File(const std::string& filePath);
+	static GLuint LoadVertexShader(const std::string& filePath);
+	static GLuint LoadFragmentShader(const std::string& filePath);
+	static GLuint LoadGeometryShader(const std::string& filePath);
+	static GLuint CreateProgram(const ShaderProgram& shaders);
 
 	virtual void Update(float dt) = 0;
-
 	virtual void Render() = 0;
-
 	virtual void Input() = 0;
 };
 
