@@ -7,9 +7,14 @@ public:
 
 	Ortoedro() = default;
 
-	// Heredado vía Primitive
+	
 	void Update(float dt) override;
 	void Render() override;
 	void Input() override;
+
+private:
+	GLuint VAO, VBO;
+	GLuint shaderProgram;
+	ShaderProgram shader;
 };
 
