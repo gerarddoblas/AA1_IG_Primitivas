@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include "Ortoedro.h"
+#include "Cube.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -56,7 +57,9 @@ void main()
 		
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		Ortoedro ortoedro;
+		//Ortoedro ortoedro;
+
+		Cube cube;
 
 		
 		while (!glfwWindowShouldClose(window)) {
@@ -64,13 +67,18 @@ void main()
 			
 			glfwPollEvents();
 
-			ortoedro.Input();
-			ortoedro.Update(0.0f);
+			//ortoedro.Input();
+			//ortoedro.Update(0.0f);
+
+			cube.Input();
+			cube.Update(0.0f);
 
 			
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-			ortoedro.Render();
+			//ortoedro.Render();
+
+			cube.Render();
 
 			
 			glfwSwapBuffers(window);
