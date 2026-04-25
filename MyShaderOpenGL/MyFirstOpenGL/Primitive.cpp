@@ -1,4 +1,23 @@
 #include "Primitive.h"
+#include <gtc/matrix_transform.hpp>
+
+//Funcion que genera una matriz de escalado representada por un vector
+glm::mat4 Primitive::GenerateScaleMatrix(glm::vec3 scaleAxis) {
+
+	return glm::scale(glm::mat4(1.0f), scaleAxis);
+}
+
+
+glm::mat4 Primitive::GenerateRotationMatrix(glm::vec3 axis, float fDegrees) {
+
+	return glm::rotate(glm::mat4(1.0f), glm::radians(fDegrees), glm::normalize(axis));
+}
+
+
+glm::mat4 Primitive::GenerateTranslationMatrix(glm::vec3 translation) {
+
+	return glm::translate(glm::mat4(1.0f), translation);
+}
 
 //Funcion que lee una string para devolver el shader a cargar en la GPU
 std::string Primitive::Load_File(const std::string& filePath) 
@@ -68,7 +87,7 @@ GLuint Primitive::LoadFragmentShader(const std::string& filePath)
 
 }
 
-GLuint Primitive::LoadGeometryShader(const std::string& filePath) //Podriamos poner aqui un enum para recbir y saber si es geometry o vertex shader
+GLuint Primitive::LoadGeometryShader(const std::string& filePath) 
 {
 	//Crear vertex shader a la GPU
 	GLuint geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
