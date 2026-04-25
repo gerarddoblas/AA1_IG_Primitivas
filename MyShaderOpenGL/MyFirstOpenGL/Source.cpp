@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include "Ortoedro.h"
+#include "Cube.h"
 #include "Camera.h"
 
 #define WINDOW_WIDTH 640
@@ -56,8 +57,8 @@ void main()
 		//Definimos color para limpiar el buffer de color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		//Ortoedro ortoedro;
-
+		Cube cube;
+		Ortoedro ortoedro;
 		Camera camera;
 
 		float lastFrame = 0.0f;
@@ -89,6 +90,8 @@ void main()
 				ortoedro.Input(window);
 				
 				ortoedro.Update(deltaTime);
+
+				cube.Update(deltaTime);
 			}
 
 			//Genero matriz de vista
@@ -101,6 +104,7 @@ void main()
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 			ortoedro.Render(viewMatrix, projectionMatrix);
+			cube.Render(viewMatrix, projectionMatrix);
 
 			//Cambiamos buffers
 			glfwSwapBuffers(window);

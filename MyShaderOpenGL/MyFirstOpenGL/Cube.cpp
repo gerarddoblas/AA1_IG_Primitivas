@@ -1,33 +1,37 @@
 #include "Cube.h"
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
 
-void Cube::Update(float dt)
-{
-    
+Cube::Cube() {
+    Init();
 }
 
-void Cube::Render()
-{
-    // Init
-    shader.vertexShader = Primitive::LoadVertexShader("MyFirstVertexShader.glsl");
-    shader.fragmentShader = Primitive::LoadFragmentShader("MyFirstFragmentShader.glsl");
-    shaderProgram = Primitive::CreateProgram(shader);
+void Cube::Init() {
+
+    shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
+    shader.fragmentShader = LoadFragmentShader("MyFirstFragmentShader.glsl");
+    shaderProgram = CreateProgram(shader);
 
     float vertices[] = {
 
-            -0.5f, +0.5f, -0.5f, // 3
-            +0.5f, +0.5f, -0.5f, // 2
-            -0.5f, -0.5f, -0.5f, // 6
-            +0.5f, -0.5f, -0.5f, // 7
-            +0.5f, -0.5f, +0.5f, // 4
-            +0.5f, +0.5f, -0.5f, // 2
-            +0.5f, +0.5f, +0.5f, // 0
-            -0.5f, +0.5f, -0.5f, // 3
-            -0.5f, +0.5f, +0.5f, // 1
-            -0.5f, -0.5f, -0.5f, // 6
-            -0.5f, -0.5f, +0.5f, // 5
-            +0.5f, -0.5f, +0.5f, // 4
-            -0.5f, +0.5f, +0.5f, // 1
-            +0.5f, +0.5f, +0.5f  // 0
+        // Cara trasera
+-0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f,  0.5f, -0.5f,
+ 0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f,
+ // Cara frontal
+ -0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f, -0.5f,  0.5f,
+  // Cara izquierda
+  -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f,
+  // Cara derecha
+   0.5f,  0.5f,  0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f, -0.5f,
+   0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f,  0.5f,  0.5f,
+   // Cara inferior
+   -0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,
+    0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f,
+    // Cara superior
+    -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f
     };
 
     glGenVertexArrays(1, &VAO);
@@ -39,18 +43,29 @@ void Cube::Render()
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
     glBindVertexArray(0);
-
-
-
-    glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 14);
-    glBindVertexArray(0);
-    glUseProgram(0);
 }
 
-void Cube::Input()
+void Cube::Update(float dt)
 {
+    rotation.y += 45.0f * dt;
 }
+
+void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
+    glUseProgram(shaderProgram);
+
+    glm::mat4 model = GenerateTranslationMatrix(position) * GenerateRotationMatrix(glm::vec3(0, 1, 0), rotation.y);
+
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(GenerateTranslationMatrix(position)));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(GenerateRotationMatrix(glm::vec3(0, 1, 0), rotation.y)));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+}
+
+void Cube::Input(GLFWwindow* window) {}

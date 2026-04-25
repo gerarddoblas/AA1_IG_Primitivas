@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Ortoedro.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -33,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="Ortoedro.h" />
     <ClInclude Include="Primitive.h" />
   </ItemGroup>
