@@ -1,6 +1,6 @@
 #pragma once
 #include "Primitive.h"
-
+#define NUM_COLORS 3
 class Pyramid : public Primitive
 {
 public:
@@ -26,6 +26,8 @@ private:
 	const float pyramidSpeed = 1.f;
 
 	const float colorInterval = 2.0f;
+	const float maxAngle = 360.0f;
+	const int vertexCount = 18;
 	float colorTime = 0.0f;
 	short colorIndex = 0;
 };
