@@ -22,5 +22,16 @@ private:
 	glm::vec3 scale = glm::vec3(1.f);
 
 	float rotationZ = 0.0f;
+	float timeAccumulator = 0.0f;
+
+	const GLsizei vertexCount = 36;
+	const float ortoedroWidth = 0.6f;
+	const float ortoedroHeight = 1.6f;
+	const float ortoedroScale = 0.7f;
+	const float animSpeed = 2.0f;
+
+	// Constants para el sin
+	const float waveOffset = 1.0f;
+	const float waveScale = 2.0f;
 };
 
