@@ -9,7 +9,7 @@ Pyramid::Pyramid()
 void Pyramid::Init()
 {
 	//Se añade el shader
-	shader.vertexShader = LoadVertexShader("VertexShader.glsl");
+	shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
 	shader.fragmentShader = LoadFragmentShader("MyFirstFragmentShader.glsl");
 	shaderProgram = CreateProgram(shader);
 

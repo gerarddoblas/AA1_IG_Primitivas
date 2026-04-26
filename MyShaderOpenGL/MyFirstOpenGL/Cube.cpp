@@ -47,13 +47,31 @@ void Cube::Init() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
+
+    //Transform
+    position = glm::vec3(0.5f, 0.0f, 0.0f);
+    rotation = glm::vec3(0.0f, 45.f, 0.0f);
+    scale = glm::vec3(0.25f, 0.25f, 0.25f);
+    forward = glm::vec3(0.0f, 1.0f, 0.0f);
+    speed = 0.01f;
+    bounds = glm::vec2(0.8f, -0.8f);
+    angle = glm::vec3(50.0f, 50.0f, 0.0f);
 }
 
 void Cube::Update(float dt)
 {
-    rotation.y += 45.0f * dt;
+    //Rotation
+    rotation.x += angle.x * dt;
+    rotation.y += angle.y * dt;
 
-    
+    if (rotation.x > 360.0f) rotation.x -= 360.0f;
+    if (rotation.y > 360.0f) rotation.y -= 360.0f;
+
+    //Movement
+    position = position + forward * speed;
+
+    if (position.y >= bounds.x || position.y <= bounds.y)
+        forward = forward * -1.f;
 }
 
 void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
