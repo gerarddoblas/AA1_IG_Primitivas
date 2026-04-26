@@ -5,7 +5,7 @@
 
 class Camera {
 public:
-	glm::vec3 position = glm::vec3(2.0f, 2.0f, 3.0f);
+	glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
 	glm::vec3 localVectorUp = glm::vec3(0.f, 1.f, 0.f);
 
 	float fFov = 45.f;

@@ -1,4 +1,4 @@
-#include "Pyramid.h"
+ï»¿#include "Pyramid.h"
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 Pyramid::Pyramid()
@@ -8,8 +8,8 @@ Pyramid::Pyramid()
 
 void Pyramid::Init()
 {
-	//Se añade el shader
-	shader.vertexShader = LoadVertexShader("VertexShader.glsl");
+	//Se aï¿½ade el shader
+	shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
 	shader.fragmentShader = LoadFragmentShader("MyFirstFragmentShader.glsl");
 	shaderProgram = CreateProgram(shader);
 
@@ -77,7 +77,7 @@ void Pyramid::Init()
 	glBindVertexArray(0);
 
 	//Transform
-	position = glm::vec3(0.5f, 0.0f, 0.0f);
+	position = glm::vec3(0.8f, 0.0f, 0.0f);
 	rotation = glm::vec3(0.0f, 45.f, 0.0f);
 	scale = glm::vec3(0.25f, 0.25f, 0.25f);
 	forward = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -125,9 +125,6 @@ void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMat
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
-	//Definimos modo de dibujo para cada cara (solid)
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 	//Desactivar el culling para que se vea toda la piramide
 	glDisable(GL_CULL_FACE);
 
@@ -140,6 +137,7 @@ void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMat
 	//Dejamos de usar el VAO indicado anteriormente
 	glBindVertexArray(0);
 	glUseProgram(0);
+	glEnable(GL_CULL_FACE);
 }
 
 void Pyramid::Input(GLFWwindow* window)

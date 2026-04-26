@@ -1,4 +1,4 @@
-#include "Ortoedro.h"
+﻿#include "Ortoedro.h"
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
@@ -9,34 +9,33 @@ Ortoedro::Ortoedro()
 
 void Ortoedro::Init()
 {
-	
-	// Init
-	shader.vertexShader = LoadVertexShader("VertexShader.glsl");
-	shader.fragmentShader =LoadFragmentShader("MyFirstFragmentShader.glsl");
-	shaderProgram =CreateProgram(shader);
+	shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
+	shader.geometryShader = LoadGeometryShader("MyFirstGeometryShader.glsl");
+	shader.fragmentShader = LoadFragmentShader("MyFirstFragmentShader.glsl");
+	shaderProgram = CreateProgram(shader);
 
 	float vertices[] = {
-		// frente (Z = -0.3) - Mirando desde -Z hacia el cubo
+		// frente 
 		-0.3f, -0.8f, -0.3f,  0.3f, -0.8f, -0.3f,  0.3f,  0.8f, -0.3f,
 		 0.3f,  0.8f, -0.3f, -0.3f,  0.8f, -0.3f, -0.3f, -0.8f, -0.3f,
 
-		 // atras (Z = 0.3) - Mirando desde +Z hacia el cubo
+		 // atras 
 		  0.3f, -0.8f,  0.3f, -0.3f, -0.8f,  0.3f, -0.3f,  0.8f,  0.3f,
 		 -0.3f,  0.8f,  0.3f,  0.3f,  0.8f,  0.3f,  0.3f, -0.8f,  0.3f,
 
-		 // abajo (Y = -0.8)
+		 // abajo
 		 -0.3f, -0.8f,  0.3f,  0.3f, -0.8f,  0.3f,  0.3f, -0.8f, -0.3f,
 		  0.3f, -0.8f, -0.3f, -0.3f, -0.8f, -0.3f, -0.3f, -0.8f,  0.3f,
 
-		  // arriba (Y = 0.8)
+		  // arriba 
 		  -0.3f,  0.8f, -0.3f,  0.3f,  0.8f, -0.3f,  0.3f,  0.8f,  0.3f,
 		   0.3f,  0.8f,  0.3f, -0.3f,  0.8f,  0.3f, -0.3f,  0.8f, -0.3f,
 
-		   // izquierda (X = -0.3)
+		   // izquierda 
 		   -0.3f, -0.8f,  0.3f, -0.3f, -0.8f, -0.3f, -0.3f,  0.8f, -0.3f,
 		   -0.3f,  0.8f, -0.3f, -0.3f,  0.8f,  0.3f, -0.3f, -0.8f,  0.3f,
 
-		   // derecha (X = 0.3)
+		   // derecha 
 			0.3f, -0.8f, -0.3f,  0.3f, -0.8f,  0.3f,  0.3f,  0.8f,  0.3f,
 			0.3f,  0.8f,  0.3f,  0.3f,  0.8f, -0.3f,  0.3f, -0.8f, -0.3f
 	};
@@ -54,19 +53,33 @@ void Ortoedro::Init()
 	glBindVertexArray(0);
 
 	//Transform
-	position = glm::vec3(0.5f, 0.5f, 0.f);
-	rotation = glm::vec3(0.0f, 45.f, 0.f);
-	scale = glm::vec3(0.7f, 0.7f, 0.7f);
+	position = glm::vec3(0.0f, 0.0f, 0.0f);
+	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	scale = glm::vec3(ortoedroScale);
+	speed = ortoedroSpeed;
 }
 
 void Ortoedro::Update(float dt)
 {
-	// Rotamos en varios ejes para que se aprecie bien el volumen
-	rotation.z += 50.0f * dt;
-	rotation.y += 30.0f * dt;
+	// Rotamos 
+	rotation.z += rotationSpeed * speed * dt;
 
 	if (rotation.z > 360.0f) rotation.z -= 360.0f;
-	if (rotation.y > 360.0f) rotation.y -= 360.0f;
+
+	// Sumamos tiempo para la inteerpolacion
+	timeAccumulator += dt;
+
+	
+	float cubeScaledForAnim = ortoedroWidth / ortoedroHeight;
+
+	float maxScaleY = ortoedroScale;
+	float minScaleY = ortoedroScale * cubeScaledForAnim;
+
+	
+	float wave = (sin(timeAccumulator * animSpeed * speed) + waveOffset) / waveScale;
+
+	// Interpolo escala.y
+	scale.y = minScaleY + (maxScaleY - minScaleY) * wave;
 }
 
 void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
@@ -78,7 +91,10 @@ void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMa
 	glm::mat4 translationMatrix = GenerateTranslationMatrix(position);
 	
 	//Rotamos
-	glm::mat4 rotationMatrix = GenerateRotationMatrix(glm::vec3(0.f, 0.f, 1.f), rotation.z);
+	glm::mat4 rotationMatrixX = GenerateRotationMatrix(glm::vec3(1.f, 0.f, 0.f), rotation.x);
+	glm::mat4 rotationMatrixY = GenerateRotationMatrix(glm::vec3(0.f, 1.f, 0.f), rotation.y);
+	glm::mat4 rotationMatrixZ = GenerateRotationMatrix(glm::vec3(0.f, 0.f, 1.f), rotation.z);
+	glm::mat4 rotationMatrix = rotationMatrixX * rotationMatrixY * rotationMatrixZ;
 	
 	glm::mat4 scaleMatrix = GenerateScaleMatrix(scale);
 
@@ -89,20 +105,13 @@ void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMa
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
-	//Definimos modo de dibujo para cada cara (solid)
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 	//Definimos que queremos usar el VAO con los puntos
 	glBindVertexArray(VAO);
 	
 	//Definimos que queremos dibujar
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
 	//Dejamos de usar el VAO indicado anteriormente
 	glBindVertexArray(0);
 	glUseProgram(0);
-}
-
-void Ortoedro::Input(GLFWwindow* window)
-{
 }
