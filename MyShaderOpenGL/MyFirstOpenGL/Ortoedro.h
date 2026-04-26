@@ -10,7 +10,6 @@ public:
 	void Init();
 	void Update(float dt) override;
 	void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
-	void Input(GLFWwindow* window) override;
 
 private:
 	GLuint VAO, VBO;
@@ -21,7 +20,6 @@ private:
 	glm::vec3 rotation = glm::vec3(0.f);
 	glm::vec3 scale = glm::vec3(1.f);
 
-	float rotationZ = 0.0f;
 	float timeAccumulator = 0.0f;
 
 	const GLsizei vertexCount = 36;
@@ -30,6 +28,7 @@ private:
 	const float ortoedroScale = 0.7f;
 	const float animSpeed = 2.0f;
 	const float rotationSpeed = 50.0f;
+	const float ortoedroSpeed = 1.f;
 
 	// Constants para el sin
 	const float waveOffset = 1.0f;

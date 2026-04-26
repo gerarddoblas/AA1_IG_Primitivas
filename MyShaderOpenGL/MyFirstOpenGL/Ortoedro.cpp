@@ -54,14 +54,15 @@ void Ortoedro::Init()
 
 	//Transform
 	position = glm::vec3(0.0f, 0.0f, 0.0f);
-	rotation = glm::vec3(0.0f, 45.f, 0.f);
+	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	scale = glm::vec3(ortoedroScale);
+	speed = ortoedroSpeed;
 }
 
 void Ortoedro::Update(float dt)
 {
 	// Rotamos 
-	rotation.z += rotationSpeed * dt;
+	rotation.z += rotationSpeed * speed * dt;
 
 	if (rotation.z > 360.0f) rotation.z -= 360.0f;
 
@@ -75,7 +76,7 @@ void Ortoedro::Update(float dt)
 	float minScaleY = ortoedroScale * cubeScaledForAnim;
 
 	
-	float wave = (sin(timeAccumulator * animSpeed) + waveOffset) / waveScale;
+	float wave = (sin(timeAccumulator * animSpeed * speed) + waveOffset) / waveScale;
 
 	// Interpolo escala.y
 	scale.y = minScaleY + (maxScaleY - minScaleY) * wave;
@@ -113,8 +114,4 @@ void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMa
 	//Dejamos de usar el VAO indicado anteriormente
 	glBindVertexArray(0);
 	glUseProgram(0);
-}
-
-void Ortoedro::Input(GLFWwindow* window)
-{
 }
