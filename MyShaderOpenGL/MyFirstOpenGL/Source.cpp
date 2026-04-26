@@ -20,7 +20,7 @@ void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHe
 	glViewport(0, 0, iFrameBufferWidth, iFrameBufferHeight);
 }
 
-void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& isWireframe, bool& key1Pressed, bool& renderOrtoedro, bool& key3Pressed) {
+void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& isWireframe, bool& key1Pressed, bool& renderCube, bool&key2Pressed, bool& renderOrtoedro, bool& key3Pressed) {
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		if (!spacePressed) {
 			isPaused = !isPaused;
@@ -39,6 +39,16 @@ void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& 
 	}
 	else {
 		key1Pressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+		if (!key2Pressed) {
+			renderCube = !renderCube;
+			key2Pressed = true;
+		}
+	}
+	else {
+		key2Pressed = false;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
@@ -99,7 +109,9 @@ void main()
 		bool isWireframe = false;
 		bool key1Pressed = false;
 		bool renderOrtoedro = true;
+		bool renderCube = true;
 		bool key3Pressed = false;
+		bool key2Pressed = false;
 
 		//Generamos el game loop
 		while (!glfwWindowShouldClose(window)) {
@@ -111,7 +123,7 @@ void main()
 			//Pulleamos los eventos (botones, teclas, mouse...)
 			glfwPollEvents();
 
-			ProcessInput(window, isPaused, spacePressed, isWireframe, key1Pressed, renderOrtoedro, key3Pressed);
+			ProcessInput(window, isPaused, spacePressed, isWireframe, key1Pressed, renderCube, key2Pressed, renderOrtoedro, key3Pressed);
 
 			if (isWireframe) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -139,8 +151,13 @@ void main()
 
 			if (renderOrtoedro) {
 				ortoedro.Render(viewMatrix, projectionMatrix);
+				
 			}
-			cube.Render(viewMatrix, projectionMatrix);
+
+			if (renderCube)
+			{
+				cube.Render(viewMatrix, projectionMatrix);
+			}
 
 			//Cambiamos buffers
 			glfwSwapBuffers(window);

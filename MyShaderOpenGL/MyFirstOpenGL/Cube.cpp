@@ -53,14 +53,7 @@ void Cube::Update(float dt)
 {
     rotation.y += 45.0f * dt;
 
-    if (position.y >= 0.5f)
-    {
-        position.y += 0.9f * dt;
-    }
-    if (position.y <= 0.5f)
-    {
-        position.y -= 0.9f * dt;
-    }
+    
 }
 
 void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
@@ -75,6 +68,7 @@ void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
+    glDisable(GL_CULL_FACE);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
