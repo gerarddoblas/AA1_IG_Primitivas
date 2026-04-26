@@ -9,6 +9,7 @@
 #include <vector>
 #include "Ortoedro.h"
 #include "Camera.h"
+#include "Pyramid.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -56,8 +57,8 @@ void main()
 		//Definimos color para limpiar el buffer de color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		Ortoedro ortoedro;
-
+		//Ortoedro ortoedro;
+		Pyramid pyramid;
 		Camera camera;
 
 		float lastFrame = 0.0f;
@@ -86,9 +87,11 @@ void main()
 			}
 
 			if (!isPaused) {
-				ortoedro.Input(window);
-				
-				ortoedro.Update(deltaTime);
+				//ortoedro.Input(window);
+				pyramid.Input(window);
+
+				//ortoedro.Update(deltaTime);
+				pyramid.Update(deltaTime);
 			}
 
 			//Genero matriz de vista
@@ -100,7 +103,8 @@ void main()
 			//Limpiamos los buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-			ortoedro.Render(viewMatrix, projectionMatrix);
+			//ortoedro.Render(viewMatrix, projectionMatrix);
+			pyramid.Render(viewMatrix, projectionMatrix);
 
 			//Cambiamos buffers
 			glfwSwapBuffers(window);
