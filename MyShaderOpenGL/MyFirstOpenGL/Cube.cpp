@@ -2,9 +2,6 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
-
 Cube::Cube() {
     Init();
 }
@@ -49,26 +46,26 @@ void Cube::Init() {
     glBindVertexArray(0);
 
     //Transform
-    position = glm::vec3(-0.8f, 0.0f, 0.0f);
-    rotation = glm::vec3(0.0f, 45.f, 0.0f);
-    scale = glm::vec3(0.25f, 0.25f, 0.25f);
-    forward = glm::vec3(0.0f, 1.0f, 0.0f);
-    speed = 0.01f;
-    bounds = glm::vec2(0.8f, -0.8f);
-    angle = glm::vec3(50.0f, 50.0f, 0.0f);
+    position = cubePosition;
+    rotation = cubeRotation;
+    scale = cubeScale;
+    forward = cubeForward;
+    speed = cubeSpeed;
+    bounds = cubeBounds;
+    angle = cubeAngle;
 }
 
 void Cube::Update(float dt)
 {
     //Rotation
-    rotation.x += angle.x * dt;
-    rotation.y += angle.y * dt;
+    rotation.x += angle.x * speed * dt;
+    rotation.y += angle.y * speed * dt;
 
     if (rotation.x > 360.0f) rotation.x -= 360.0f;
     if (rotation.y > 360.0f) rotation.y -= 360.0f;
 
     //Movement
-    position = position + forward * speed;
+    position = position + forward * speed * dt;
 
     if (position.y >= bounds.x || position.y <= bounds.y)
         forward = forward * -1.f;
@@ -92,5 +89,3 @@ void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix
     glBindVertexArray(0);
     glEnable(GL_CULL_FACE);
 }
-
-void Cube::Input(GLFWwindow* window) {}

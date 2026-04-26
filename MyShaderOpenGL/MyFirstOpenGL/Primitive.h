@@ -27,6 +27,7 @@ public:
 	glm::vec3 angle = glm::vec3(0.f, 0.f, 0.f);
 
 	float speed = 0.0f;
+	bool isVisible = true;
 
 	//Funcion que genera una matriz de escalado representada por un vector
 	virtual glm::mat4 GenerateScaleMatrix(glm::vec3 scaleAxis);
@@ -45,5 +46,4 @@ public:
 
 	virtual void Update(float dt) = 0;
 	virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
-	virtual void Input(GLFWwindow* window) = 0;
 };
