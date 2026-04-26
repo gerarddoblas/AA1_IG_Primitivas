@@ -10,9 +10,10 @@
 #include "Ortoedro.h"
 #include "Cube.h"
 #include "Camera.h"
+#include "Pyramid.h"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 720
 
 void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHeight) {
 
@@ -101,6 +102,11 @@ void main()
 
 		Cube cube;
 		Ortoedro ortoedro;
+		std::vector<Primitive*> primitives;
+
+		primitives.push_back(new Ortoedro());
+		primitives.push_back(new Pyramid());
+
 		Camera camera;
 
 		float lastFrame = 0.0f;
@@ -138,6 +144,13 @@ void main()
 				ortoedro.Update(deltaTime);
 
 				cube.Update(deltaTime);
+				//ortoedro.Input(window);
+				//pyramid.Input(window);
+
+				for (short i = 0; i < primitives.size(); i++)
+				{
+					primitives[i]->Update(deltaTime);
+				}
 			}
 
 			//Genero matriz de vista
@@ -153,6 +166,10 @@ void main()
 				ortoedro.Render(viewMatrix, projectionMatrix);
 				
 			}
+			for (short i = 0; i < primitives.size(); i++)
+			{
+				primitives[i]->Render(viewMatrix, projectionMatrix);
+			}
 
 			if (renderCube)
 			{
@@ -162,6 +179,12 @@ void main()
 			//Cambiamos buffers
 			glfwSwapBuffers(window);
 		}
+
+		for (short i = 0; i < primitives.size(); i++)
+		{
+			delete primitives[i];
+		}
+		primitives.clear();
 
 	}else {
 		std::cout << "Ha petao." << std::endl;

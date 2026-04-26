@@ -39,6 +39,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="Pyramid.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
     <ClCompile Include="Cube.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
@@ -63,9 +66,6 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
