@@ -61,7 +61,7 @@ void Ortoedro::Init()
 void Ortoedro::Update(float dt)
 {
 	// Rotamos 
-	rotation.z += 50.0f * dt;
+	rotation.z += rotationSpeed * dt;
 
 	if (rotation.z > 360.0f) rotation.z -= 360.0f;
 
@@ -100,9 +100,6 @@ void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMa
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-
-	//Definimos modo de dibujo para cada cara 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//Definimos que queremos usar el VAO con los puntos
 	glBindVertexArray(VAO);
