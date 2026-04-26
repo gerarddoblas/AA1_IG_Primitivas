@@ -9,9 +9,10 @@
 #include <vector>
 #include "Ortoedro.h"
 #include "Camera.h"
+#include "Pyramid.h"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 720
 
 void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHeight) {
 
@@ -19,7 +20,7 @@ void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHe
 	glViewport(0, 0, iFrameBufferWidth, iFrameBufferHeight);
 }
 
-void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& isWireframe, bool& key1Pressed, bool& renderOrtoedro, bool& key3Pressed) {
+void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& isWireframe, bool& key1Pressed, bool& key3Pressed, bool& key4Pressed, bool& renderOrtoedro, bool& renderPyramid) {
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		if (!spacePressed) {
 			isPaused = !isPaused;
@@ -48,6 +49,16 @@ void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& 
 	}
 	else {
 		key3Pressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+		if (!key4Pressed) {
+			renderPyramid = !renderPyramid;
+			key4Pressed = true;
+		}
+	}
+	else {
+		key4Pressed = false;
 	}
 }
 
@@ -88,7 +99,10 @@ void main()
 		//Definimos color para limpiar el buffer de color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		Ortoedro ortoedro;
+		std::vector<Primitive*> primitives;
+
+		primitives.push_back(new Ortoedro());
+		primitives.push_back(new Pyramid());
 
 		Camera camera;
 
@@ -99,6 +113,8 @@ void main()
 		bool key1Pressed = false;
 		bool renderOrtoedro = true;
 		bool key3Pressed = false;
+		bool key4Pressed = false;
+		bool renderPyramid = true;
 
 		//Generamos el game loop
 		while (!glfwWindowShouldClose(window)) {
@@ -110,7 +126,7 @@ void main()
 			//Pulleamos los eventos (botones, teclas, mouse...)
 			glfwPollEvents();
 
-			ProcessInput(window, isPaused, spacePressed, isWireframe, key1Pressed, renderOrtoedro, key3Pressed);
+			ProcessInput(window, isPaused, spacePressed, isWireframe, key1Pressed, key3Pressed, key4Pressed, renderOrtoedro, renderPyramid);
 
 			if (isWireframe) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -120,9 +136,10 @@ void main()
 			}
 
 			if (!isPaused) {
-				ortoedro.Input(window);
-				
-				ortoedro.Update(deltaTime);
+				for (short i = 0; i < primitives.size(); i++)
+				{
+					primitives[i]->Update(deltaTime);
+				}
 			}
 
 			//Genero matriz de vista
@@ -134,13 +151,27 @@ void main()
 			//Limpiamos los buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+			//for (short i = 0; i < primitives.size(); i++)
+			//{
+			//	primitives[i]->Render(viewMatrix, projectionMatrix);
+			//}
+
 			if (renderOrtoedro) {
-				ortoedro.Render(viewMatrix, projectionMatrix);
+				primitives[0]->Render(viewMatrix, projectionMatrix);
+			}
+			if (renderPyramid) {
+				primitives[1]->Render(viewMatrix, projectionMatrix);
 			}
 
 			//Cambiamos buffers
 			glfwSwapBuffers(window);
 		}
+
+		for (short i = 0; i < primitives.size(); i++)
+		{
+			delete primitives[i];
+		}
+		primitives.clear();
 
 	}else {
 		std::cout << "Ha petao." << std::endl;

@@ -23,6 +23,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Ortoedro.cpp" />
     <ClCompile Include="Primitive.cpp" />
+    <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -35,6 +36,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Ortoedro.h" />
     <ClInclude Include="Primitive.h" />
+    <ClInclude Include="Pyramid.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
