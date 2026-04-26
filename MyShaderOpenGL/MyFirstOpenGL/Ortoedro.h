@@ -29,6 +29,8 @@ private:
 	const float animSpeed = 2.0f;
 	const float rotationSpeed = 50.0f;
 	const float ortoedroSpeed = 1.f;
+	const float circle = 360.0f;
+
 
 	// Constants para el sin
 	const float waveOffset = 1.0f;

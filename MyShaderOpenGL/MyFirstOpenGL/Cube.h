@@ -19,4 +19,6 @@ private:
     const glm::vec3 cubeAngle = glm::vec3(50.0f, 50.0f, 0.0f);
 
     const float cubeSpeed = 1.f;
+    const float maxAngle = 360.0f;
+    const int vertexCount = 36;
 };

@@ -1,10 +1,12 @@
-﻿#include "Pyramid.h"
+#include "Pyramid.h"
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 Pyramid::Pyramid()
 {
 	Init();
 }
+
+
 
 void Pyramid::Init()
 {
@@ -92,8 +94,8 @@ void Pyramid::Update(float dt)
 	rotation.x += angle.x * speed * dt;
 	rotation.y += angle.y * speed * dt;
 
-	if (rotation.x > 360.0f) rotation.x -= 360.0f;
-	if (rotation.y > 360.0f) rotation.y -= 360.0f;
+	if (rotation.x > maxAngle) rotation.x -= maxAngle;
+	if (rotation.y > maxAngle) rotation.y -= maxAngle;
 
 	//Movement
 	position = position + forward * speed * dt;
@@ -107,7 +109,7 @@ void Pyramid::Update(float dt)
 	if (colorTime >= colorInterval)
 	{
 		colorTime -= colorInterval;
-		colorIndex = (colorIndex + 1) % 3;
+		colorIndex = (colorIndex + 1) % NUM_COLORS;
 	}
 }
 
@@ -128,7 +130,7 @@ void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMat
 	glm::mat4 scaleMatrix = GenerateScaleMatrix(scale);
 
 	//Vector de colores
-	glm::vec3 colors[3] =
+	glm::vec3 colors[NUM_COLORS] =
 	{
 		glm::vec3(1.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
@@ -150,7 +152,7 @@ void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMat
 	glBindVertexArray(VAO);
 
 	//Definimos que queremos dibujar
-	glDrawArrays(GL_TRIANGLES, 0, 18);
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
 	//Dejamos de usar el VAO indicado anteriormente
 	glBindVertexArray(0);
