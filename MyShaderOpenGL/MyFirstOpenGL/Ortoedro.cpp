@@ -1,4 +1,4 @@
-#include "Ortoedro.h"
+﻿#include "Ortoedro.h"
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
@@ -53,7 +53,7 @@ void Ortoedro::Init()
 	glBindVertexArray(0);
 
 	//Transform
-	position = glm::vec3(0.5f, 0.5f, 0.f);
+	position = glm::vec3(0.0f, 0.0f, 0.0f);
 	rotation = glm::vec3(0.0f, 45.f, 0.f);
 	scale = glm::vec3(ortoedroScale);
 }
@@ -90,7 +90,10 @@ void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMa
 	glm::mat4 translationMatrix = GenerateTranslationMatrix(position);
 	
 	//Rotamos
-	glm::mat4 rotationMatrix = GenerateRotationMatrix(glm::vec3(0.f, 0.f, 1.f), rotation.z);
+	glm::mat4 rotationMatrixX = GenerateRotationMatrix(glm::vec3(1.f, 0.f, 0.f), rotation.x);
+	glm::mat4 rotationMatrixY = GenerateRotationMatrix(glm::vec3(0.f, 1.f, 0.f), rotation.y);
+	glm::mat4 rotationMatrixZ = GenerateRotationMatrix(glm::vec3(0.f, 0.f, 1.f), rotation.z);
+	glm::mat4 rotationMatrix = rotationMatrixX * rotationMatrixY * rotationMatrixZ;
 	
 	glm::mat4 scaleMatrix = GenerateScaleMatrix(scale);
 
