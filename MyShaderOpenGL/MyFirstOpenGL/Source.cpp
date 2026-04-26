@@ -48,7 +48,7 @@ void main()
 	glEnable(GL_CULL_FACE);
 
 	//Indicamos lado del culling
-	glCullFace(GL_BACK);
+	glCullFace(GL_FRONT);
 
 	//Inicializamos GLEW y controlamos errores
 	if (glewInit() == GLEW_OK) {

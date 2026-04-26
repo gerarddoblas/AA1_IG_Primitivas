@@ -9,34 +9,33 @@ Ortoedro::Ortoedro()
 
 void Ortoedro::Init()
 {
-	
-	// Init
-	shader.vertexShader = LoadVertexShader("VertexShader.glsl");
-	shader.fragmentShader =LoadFragmentShader("MyFirstFragmentShader.glsl");
-	shaderProgram =CreateProgram(shader);
+	shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
+	shader.geometryShader = LoadGeometryShader("MyFirstGeometryShader.glsl");
+	shader.fragmentShader = LoadFragmentShader("MyFirstFragmentShader.glsl");
+	shaderProgram = CreateProgram(shader);
 
 	float vertices[] = {
-		// frente (Z = -0.3) - Mirando desde -Z hacia el cubo
+		// frente 
 		-0.3f, -0.8f, -0.3f,  0.3f, -0.8f, -0.3f,  0.3f,  0.8f, -0.3f,
 		 0.3f,  0.8f, -0.3f, -0.3f,  0.8f, -0.3f, -0.3f, -0.8f, -0.3f,
 
-		 // atras (Z = 0.3) - Mirando desde +Z hacia el cubo
+		 // atras 
 		  0.3f, -0.8f,  0.3f, -0.3f, -0.8f,  0.3f, -0.3f,  0.8f,  0.3f,
 		 -0.3f,  0.8f,  0.3f,  0.3f,  0.8f,  0.3f,  0.3f, -0.8f,  0.3f,
 
-		 // abajo (Y = -0.8)
+		 // abajo
 		 -0.3f, -0.8f,  0.3f,  0.3f, -0.8f,  0.3f,  0.3f, -0.8f, -0.3f,
 		  0.3f, -0.8f, -0.3f, -0.3f, -0.8f, -0.3f, -0.3f, -0.8f,  0.3f,
 
-		  // arriba (Y = 0.8)
+		  // arriba 
 		  -0.3f,  0.8f, -0.3f,  0.3f,  0.8f, -0.3f,  0.3f,  0.8f,  0.3f,
 		   0.3f,  0.8f,  0.3f, -0.3f,  0.8f,  0.3f, -0.3f,  0.8f, -0.3f,
 
-		   // izquierda (X = -0.3)
+		   // izquierda 
 		   -0.3f, -0.8f,  0.3f, -0.3f, -0.8f, -0.3f, -0.3f,  0.8f, -0.3f,
 		   -0.3f,  0.8f, -0.3f, -0.3f,  0.8f,  0.3f, -0.3f, -0.8f,  0.3f,
 
-		   // derecha (X = 0.3)
+		   // derecha 
 			0.3f, -0.8f, -0.3f,  0.3f, -0.8f,  0.3f,  0.3f,  0.8f,  0.3f,
 			0.3f,  0.8f,  0.3f,  0.3f,  0.8f, -0.3f,  0.3f, -0.8f, -0.3f
 	};
@@ -56,17 +55,30 @@ void Ortoedro::Init()
 	//Transform
 	position = glm::vec3(0.5f, 0.5f, 0.f);
 	rotation = glm::vec3(0.0f, 45.f, 0.f);
-	scale = glm::vec3(0.7f, 0.7f, 0.7f);
+	scale = glm::vec3(ortoedroScale);
 }
 
 void Ortoedro::Update(float dt)
 {
-	// Rotamos en varios ejes para que se aprecie bien el volumen
+	// Rotamos 
 	rotation.z += 50.0f * dt;
-	rotation.y += 30.0f * dt;
 
 	if (rotation.z > 360.0f) rotation.z -= 360.0f;
-	if (rotation.y > 360.0f) rotation.y -= 360.0f;
+
+	// Sumamos tiempo para la inteerpolacion
+	timeAccumulator += dt;
+
+	
+	float cubeScaledForAnim = ortoedroWidth / ortoedroHeight;
+
+	float maxScaleY = ortoedroScale;
+	float minScaleY = ortoedroScale * cubeScaledForAnim;
+
+	
+	float wave = (sin(timeAccumulator * animSpeed) + waveOffset) / waveScale;
+
+	// Interpolo escala.y
+	scale.y = minScaleY + (maxScaleY - minScaleY) * wave;
 }
 
 void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
@@ -89,14 +101,14 @@ void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMa
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
-	//Definimos modo de dibujo para cada cara (solid)
+	//Definimos modo de dibujo para cada cara 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//Definimos que queremos usar el VAO con los puntos
 	glBindVertexArray(VAO);
 	
 	//Definimos que queremos dibujar
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
 	//Dejamos de usar el VAO indicado anteriormente
 	glBindVertexArray(0);
