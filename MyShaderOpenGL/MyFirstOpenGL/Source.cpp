@@ -12,7 +12,7 @@
 #include "Pyramid.h"
 
 #define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_HEIGHT 1080
 
 void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHeight) {
 
@@ -57,7 +57,7 @@ void main()
 		//Definimos color para limpiar el buffer de color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		//Ortoedro ortoedro;
+		Ortoedro ortoedro;
 		Pyramid pyramid;
 		Camera camera;
 
@@ -87,10 +87,10 @@ void main()
 			}
 
 			if (!isPaused) {
-				//ortoedro.Input(window);
+				ortoedro.Input(window);
 				pyramid.Input(window);
 
-				//ortoedro.Update(deltaTime);
+				ortoedro.Update(deltaTime);
 				pyramid.Update(deltaTime);
 			}
 
@@ -103,7 +103,7 @@ void main()
 			//Limpiamos los buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-			//ortoedro.Render(viewMatrix, projectionMatrix);
+			ortoedro.Render(viewMatrix, projectionMatrix);
 			pyramid.Render(viewMatrix, projectionMatrix);
 
 			//Cambiamos buffers

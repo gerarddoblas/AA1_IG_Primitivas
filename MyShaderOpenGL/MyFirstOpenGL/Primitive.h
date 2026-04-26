@@ -18,6 +18,14 @@ public:
 		GLuint fragmentShader = 0;
 	};
 
+	glm::vec3 position = glm::vec3(0.f);
+	glm::vec3 rotation = glm::vec3(0.f);
+	glm::vec3 scale = glm::vec3(1.f);
+	glm::vec3 forward = glm::vec3(0.f, 0.f, 0.f);
+	glm::vec2 bounds = glm::vec2(0.f, 0.f);
+
+	float speed = 0.0f;
+
 	//Funcion que genera una matriz de escalado representada por un vector
 	virtual glm::mat4 GenerateScaleMatrix(glm::vec3 scaleAxis);
 

@@ -80,6 +80,9 @@ void Pyramid::Init()
 	position = glm::vec3(0.5f, 0.0f, 0.0f);
 	rotation = glm::vec3(0.0f, 45.f, 0.0f);
 	scale = glm::vec3(0.5f, 0.5f, 0.5f);
+	forward = glm::vec3(0.0f, 1.0f, 0.0f);
+	speed = 0.01f;
+	bounds = glm::vec2(0.8f, -0.8f);
 }
 
 void Pyramid::Update(float dt)
@@ -89,6 +92,11 @@ void Pyramid::Update(float dt)
 
 	if (rotation.x > 360.0f) rotation.x -= 360.0f;
 	if (rotation.y > 360.0f) rotation.y -= 360.0f;
+
+	position = position + forward * speed;
+
+	if (position.y >= bounds.x || position.y <= bounds.y)
+		forward = forward * -1.f;
 }
 
 void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
