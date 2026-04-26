@@ -49,7 +49,7 @@ void Cube::Init() {
     glBindVertexArray(0);
 
     //Transform
-    position = glm::vec3(0.5f, 0.0f, 0.0f);
+    position = glm::vec3(-0.8f, 0.0f, 0.0f);
     rotation = glm::vec3(0.0f, 45.f, 0.0f);
     scale = glm::vec3(0.25f, 0.25f, 0.25f);
     forward = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -81,7 +81,7 @@ void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix
 
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(GenerateTranslationMatrix(position)));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(GenerateRotationMatrix(glm::vec3(0, 1, 0), rotation.y)));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(GenerateScaleMatrix(scale)));
 
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
@@ -90,6 +90,7 @@ void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
+    glEnable(GL_CULL_FACE);
 }
 
 void Cube::Input(GLFWwindow* window) {}

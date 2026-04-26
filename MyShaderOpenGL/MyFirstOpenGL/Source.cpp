@@ -21,7 +21,7 @@ void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHe
 	glViewport(0, 0, iFrameBufferWidth, iFrameBufferHeight);
 }
 
-void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& isWireframe, bool& key1Pressed, bool& key3Pressed, bool& key4Pressed, bool& renderOrtoedro, bool& renderPyramid) {
+void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& isWireframe, bool& key1Pressed, bool& key2Pressed, bool& key3Pressed, bool& key4Pressed, bool& renderOrtoedro, bool& renderPyramid,bool& renderCube) {
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		if (!spacePressed) {
 			isPaused = !isPaused;
@@ -141,7 +141,7 @@ void main()
 			//Pulleamos los eventos (botones, teclas, mouse...)
 			glfwPollEvents();
 
-			ProcessInput(window, isPaused, spacePressed, isWireframe, key1Pressed, key3Pressed, key4Pressed, renderOrtoedro, renderPyramid);
+			ProcessInput(window, isPaused, spacePressed, isWireframe, key1Pressed, key2Pressed, key3Pressed, key4Pressed, renderOrtoedro, renderPyramid,renderCube);
 
 			if (isWireframe) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -155,6 +155,7 @@ void main()
 				{
 					primitives[i]->Update(deltaTime);
 				}
+				cube.Update(deltaTime);
 			}
 
 			//Genero matriz de vista
