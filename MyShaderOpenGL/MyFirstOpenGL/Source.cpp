@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include "Ortoedro.h"
+#include "Cube.h"
 #include "Camera.h"
 #include "Pyramid.h"
 
@@ -39,6 +40,16 @@ void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& 
 	}
 	else {
 		key1Pressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+		if (!key2Pressed) {
+			renderCube = !renderCube;
+			key2Pressed = true;
+		}
+	}
+	else {
+		key2Pressed = false;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
@@ -99,6 +110,8 @@ void main()
 		//Definimos color para limpiar el buffer de color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
+		Cube cube;
+		Ortoedro ortoedro;
 		std::vector<Primitive*> primitives;
 
 		primitives.push_back(new Ortoedro());
@@ -112,9 +125,11 @@ void main()
 		bool isWireframe = false;
 		bool key1Pressed = false;
 		bool renderOrtoedro = true;
+		bool renderCube = true;
 		bool key3Pressed = false;
 		bool key4Pressed = false;
 		bool renderPyramid = true;
+		bool key2Pressed = false;
 
 		//Generamos el game loop
 		while (!glfwWindowShouldClose(window)) {
@@ -161,6 +176,11 @@ void main()
 			}
 			if (renderPyramid) {
 				primitives[1]->Render(viewMatrix, projectionMatrix);
+			}
+
+			if (renderCube)
+			{
+				cube.Render(viewMatrix, projectionMatrix);
 			}
 
 			//Cambiamos buffers
