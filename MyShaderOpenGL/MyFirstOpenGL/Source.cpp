@@ -19,6 +19,38 @@ void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHe
 	glViewport(0, 0, iFrameBufferWidth, iFrameBufferHeight);
 }
 
+void ProcessInput(GLFWwindow* window, bool& isPaused, bool& spacePressed, bool& isWireframe, bool& key1Pressed, bool& renderOrtoedro, bool& key3Pressed) {
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		if (!spacePressed) {
+			isPaused = !isPaused;
+			spacePressed = true;
+		}
+	}
+	else {
+		spacePressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+		if (!key1Pressed) {
+			isWireframe = !isWireframe;
+			key1Pressed = true;
+		}
+	}
+	else {
+		key1Pressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+		if (!key3Pressed) {
+			renderOrtoedro = !renderOrtoedro;
+			key3Pressed = true;
+		}
+	}
+	else {
+		key3Pressed = false;
+	}
+}
+
 void main()
 {
 	srand(time(NULL));
@@ -63,6 +95,10 @@ void main()
 		float lastFrame = 0.0f;
 		bool isPaused = false;
 		bool spacePressed = false;
+		bool isWireframe = false;
+		bool key1Pressed = false;
+		bool renderOrtoedro = true;
+		bool key3Pressed = false;
 
 		//Generamos el game loop
 		while (!glfwWindowShouldClose(window)) {
@@ -74,15 +110,13 @@ void main()
 			//Pulleamos los eventos (botones, teclas, mouse...)
 			glfwPollEvents();
 
-			
-			if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-				if (!spacePressed) {
-					isPaused = !isPaused;
-					spacePressed = true;
-				}
+			ProcessInput(window, isPaused, spacePressed, isWireframe, key1Pressed, renderOrtoedro, key3Pressed);
+
+			if (isWireframe) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 			else {
-				spacePressed = false;
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
 
 			if (!isPaused) {
@@ -100,7 +134,9 @@ void main()
 			//Limpiamos los buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-			ortoedro.Render(viewMatrix, projectionMatrix);
+			if (renderOrtoedro) {
+				ortoedro.Render(viewMatrix, projectionMatrix);
+			}
 
 			//Cambiamos buffers
 			glfwSwapBuffers(window);

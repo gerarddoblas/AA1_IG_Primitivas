@@ -29,6 +29,7 @@ private:
 	const float ortoedroHeight = 1.6f;
 	const float ortoedroScale = 0.7f;
 	const float animSpeed = 2.0f;
+	const float rotationSpeed = 50.0f;
 
 	// Constants para el sin
 	const float waveOffset = 1.0f;
