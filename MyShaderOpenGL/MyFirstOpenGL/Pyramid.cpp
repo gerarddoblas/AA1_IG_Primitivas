@@ -79,20 +79,23 @@ void Pyramid::Init()
 	//Transform
 	position = glm::vec3(0.5f, 0.0f, 0.0f);
 	rotation = glm::vec3(0.0f, 45.f, 0.0f);
-	scale = glm::vec3(0.5f, 0.5f, 0.5f);
+	scale = glm::vec3(0.25f, 0.25f, 0.25f);
 	forward = glm::vec3(0.0f, 1.0f, 0.0f);
 	speed = 0.01f;
 	bounds = glm::vec2(0.8f, -0.8f);
+	angle = glm::vec3(50.0f, 50.0f, 0.0f);
 }
 
 void Pyramid::Update(float dt)
 {
-	rotation.x += 50.0f * dt;
-	rotation.y += 50.0f * dt;
+	//Rotation
+	rotation.x += angle.x * dt;
+	rotation.y += angle.y * dt;
 
 	if (rotation.x > 360.0f) rotation.x -= 360.0f;
 	if (rotation.y > 360.0f) rotation.y -= 360.0f;
 
+	//Movement
 	position = position + forward * speed;
 
 	if (position.y >= bounds.x || position.y <= bounds.y)

@@ -11,8 +11,8 @@
 #include "Camera.h"
 #include "Pyramid.h"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 1080
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 720
 
 void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHeight) {
 
@@ -57,8 +57,11 @@ void main()
 		//Definimos color para limpiar el buffer de color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		Ortoedro ortoedro;
-		Pyramid pyramid;
+		std::vector<Primitive*> primitives;
+
+		primitives.push_back(new Ortoedro());
+		primitives.push_back(new Pyramid());
+
 		Camera camera;
 
 		float lastFrame = 0.0f;
@@ -87,11 +90,13 @@ void main()
 			}
 
 			if (!isPaused) {
-				ortoedro.Input(window);
-				pyramid.Input(window);
+				//ortoedro.Input(window);
+				//pyramid.Input(window);
 
-				ortoedro.Update(deltaTime);
-				pyramid.Update(deltaTime);
+				for (short i = 0; i < primitives.size(); i++)
+				{
+					primitives[i]->Update(deltaTime);
+				}
 			}
 
 			//Genero matriz de vista
@@ -103,12 +108,20 @@ void main()
 			//Limpiamos los buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-			ortoedro.Render(viewMatrix, projectionMatrix);
-			pyramid.Render(viewMatrix, projectionMatrix);
+			for (short i = 0; i < primitives.size(); i++)
+			{
+				primitives[i]->Render(viewMatrix, projectionMatrix);
+			}
 
 			//Cambiamos buffers
 			glfwSwapBuffers(window);
 		}
+
+		for (short i = 0; i < primitives.size(); i++)
+		{
+			delete primitives[i];
+		}
+		primitives.clear();
 
 	}else {
 		std::cout << "Ha petao." << std::endl;

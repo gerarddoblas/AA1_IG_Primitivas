@@ -16,10 +16,4 @@ private:
 	GLuint VAO, VBO;
 	GLuint shaderProgram;
 	ShaderProgram shader;
-
-
-
-
-	float rotationX = 0.0f;
-	float rotationY = 0.0f;
 };
