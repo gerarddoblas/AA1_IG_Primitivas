@@ -8,9 +8,9 @@ Pyramid::Pyramid()
 
 void Pyramid::Init()
 {
-	//Se a�ade el shader
+	//Se cargan los shaders
 	shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
-	shader.fragmentShader = LoadFragmentShader("MyFirstFragmentShader.glsl");
+	shader.fragmentShader = LoadFragmentShader("PyramidFragmentShader.glsl");
 	shaderProgram = CreateProgram(shader);
 
 	float vertices[] =
@@ -77,29 +77,38 @@ void Pyramid::Init()
 	glBindVertexArray(0);
 
 	//Transform
-	position = glm::vec3(0.8f, 0.0f, 0.0f);
-	rotation = glm::vec3(0.0f, 45.f, 0.0f);
-	scale = glm::vec3(0.25f, 0.25f, 0.25f);
-	forward = glm::vec3(0.0f, 1.0f, 0.0f);
-	speed = 0.01f;
-	bounds = glm::vec2(0.8f, -0.8f);
-	angle = glm::vec3(50.0f, 50.0f, 0.0f);
+	position = pyramidPosition;
+	rotation = pyramidRotation;
+	scale = pyramidScale;
+	forward = pyramidForward;
+	speed = pyramidSpeed;
+	bounds = pyramidBounds;
+	angle = pyramidAngle;
 }
 
 void Pyramid::Update(float dt)
 {
 	//Rotation
-	rotation.x += angle.x * dt;
-	rotation.y += angle.y * dt;
+	rotation.x += angle.x * speed * dt;
+	rotation.y += angle.y * speed * dt;
 
 	if (rotation.x > 360.0f) rotation.x -= 360.0f;
 	if (rotation.y > 360.0f) rotation.y -= 360.0f;
 
 	//Movement
-	position = position + forward * speed;
+	position = position + forward * speed * dt;
 
 	if (position.y >= bounds.x || position.y <= bounds.y)
 		forward = forward * -1.f;
+
+	//Color
+	colorTime += dt;
+
+	if (colorTime >= colorInterval)
+	{
+		colorTime -= colorInterval;
+		colorIndex = (colorIndex + 1) % 3;
+	}
 }
 
 void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
@@ -118,12 +127,21 @@ void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMat
 	glm::mat4 rotationMatrix = rotationMatrixX * rotationMatrixY * rotationMatrixZ;
 	glm::mat4 scaleMatrix = GenerateScaleMatrix(scale);
 
+	//Vector de colores
+	glm::vec3 colors[3] =
+	{
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
+	};
+
 	//Pasamos las variables del shader
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	glUniform3fv(glGetUniformLocation(shaderProgram, "primitiveColor"), 1, glm::value_ptr(colors[colorIndex]));
 
 	//Desactivar el culling para que se vea toda la piramide
 	glDisable(GL_CULL_FACE);
@@ -138,9 +156,4 @@ void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMat
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glEnable(GL_CULL_FACE);
-}
-
-void Pyramid::Input(GLFWwindow* window)
-{
-
 }
