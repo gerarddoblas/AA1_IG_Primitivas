@@ -58,11 +58,10 @@ void Cube::Init() {
 void Cube::Update(float dt)
 {
     //Rotation
-    rotation.x += angle.x * speed * dt;
+    
     rotation.y += angle.y * speed * dt;
 
-    if (rotation.x > 360.0f) rotation.x -= 360.0f;
-    if (rotation.y > 360.0f) rotation.y -= 360.0f;
+    if (rotation.y > maxAngle) rotation.y -= maxAngle;
 
     //Movement
     position = position + forward * speed * dt;
@@ -85,7 +84,7 @@ void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix
 
     glDisable(GL_CULL_FACE);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     glBindVertexArray(0);
     glEnable(GL_CULL_FACE);
 }

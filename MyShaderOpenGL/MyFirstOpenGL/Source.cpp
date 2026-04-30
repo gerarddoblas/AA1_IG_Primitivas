@@ -15,6 +15,12 @@
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 720
 
+const float SPEED_MULTIPLIER_UP = 1.1f;
+const float SPEED_MULTIPLIER_DOWN = 0.9f;
+const int OPENGL_MAJOR = 4;
+const int OPENGL_MINOR = 4;
+const char* WINDOW_TITLE = "My Engine";
+
 void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHeight) {
 
 	//Definir nuevo tamaño del viewport
@@ -50,7 +56,7 @@ void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<Prim
 		if (!state.keyMPressed)
 		{
 			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-				it->second->speed *= 1.1f;
+				it->second->speed *= SPEED_MULTIPLIER_UP;
 			state.keyMPressed = true;
 		}
 	}
@@ -63,7 +69,7 @@ void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<Prim
 		if (!state.keyNPressed)
 		{
 			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-				it->second->speed *= 0.9f;
+				it->second->speed *= SPEED_MULTIPLIER_DOWN;
 			state.keyNPressed = true;
 		}
 	}
@@ -120,12 +126,12 @@ void main()
 	
 	//Configurar la ventana
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_MAJOR);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	//Inicializamos la ventana
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "My Engine", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
 
 	//Asignamos función de callback para cuando el frame buffer es modificado
 	glfwSetFramebufferSizeCallback(window, Resize_Window);

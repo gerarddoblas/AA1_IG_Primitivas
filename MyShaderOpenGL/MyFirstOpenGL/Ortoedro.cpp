@@ -7,6 +7,8 @@ Ortoedro::Ortoedro()
 	Init();
 }
 
+
+
 void Ortoedro::Init()
 {
 	shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
@@ -54,7 +56,7 @@ void Ortoedro::Init()
 
 	//Transform
 	position = glm::vec3(0.0f, 0.0f, 0.0f);
-	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	rotation = glm::vec3(0.0f, 45.0f, 0.0f);
 	scale = glm::vec3(ortoedroScale);
 	speed = ortoedroSpeed;
 }
@@ -64,7 +66,7 @@ void Ortoedro::Update(float dt)
 	// Rotamos 
 	rotation.z += rotationSpeed * speed * dt;
 
-	if (rotation.z > 360.0f) rotation.z -= 360.0f;
+	if (rotation.z > circle) rotation.z -= circle;
 
 	// Sumamos tiempo para la inteerpolacion
 	timeAccumulator += dt;

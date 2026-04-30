@@ -57,6 +57,9 @@
     <None Include="MyFirstFragmentShader.glsl">
       <Filter>Shader\Fragment Shader</Filter>
     </None>
+    <None Include="PyramidFragmentShader.glsl">
+      <Filter>Shader\Fragment Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Primitive.h">
