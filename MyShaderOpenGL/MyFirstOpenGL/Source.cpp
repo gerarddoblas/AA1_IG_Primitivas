@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Pyramid.h"
 #include <unordered_map>
+#include "InputManager.h"
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 720
@@ -34,89 +35,6 @@ enum PrimitiveType
 	PYRAMID
 };
 
-struct InputState
-{
-	bool isPaused = false;
-	bool isWireframe = false;
-
-	bool spacePressed = false;
-	bool keyMPressed = false;
-	bool keyNPressed = false;
-	bool key1Pressed = false;
-	bool key2Pressed = false;
-	bool key3Pressed = false;
-	bool key4Pressed = false;
-};
-
-void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<PrimitiveType, Primitive*>& primitives) {
-
-	//Aceleracción del movimiento al pulsar la M
-	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-	{
-		if (!state.keyMPressed)
-		{
-			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-				it->second->speed *= SPEED_MULTIPLIER_UP;
-			state.keyMPressed = true;
-		}
-	}
-	else
-		state.keyMPressed = false;
-
-	//Desaceleración del movimiento al pulsar la N
-	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-	{
-		if (!state.keyNPressed)
-		{
-			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-				it->second->speed *= SPEED_MULTIPLIER_DOWN;
-			state.keyNPressed = true;
-		}
-	}
-	else
-		state.keyNPressed = false;
-
-	//Cambiando a modo Wireframe
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-		if (!state.key1Pressed) {
-			state.isWireframe = !state.isWireframe;
-			state.key1Pressed = true;
-		}
-	}
-	else
-		state.key1Pressed = false;
-
-	//Activar visibilidad de los primitives tipo CUBE
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-		if (!state.key2Pressed) {
-			primitives[PrimitiveType::CUBE]->isVisible = !primitives[PrimitiveType::CUBE]->isVisible;
-			state.key2Pressed = true;
-		}
-	}
-	else
-		state.key2Pressed = false;
-
-	//Activar visibilidad de los primitives tipo ORTOEDRO
-	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
-		if (!state.key3Pressed) {
-			primitives[PrimitiveType::ORTOEDRO]->isVisible = !primitives[PrimitiveType::ORTOEDRO]->isVisible;
-			state.key3Pressed = true;
-		}
-	}
-	else
-		state.key3Pressed = false;
-
-	//Activar visibilidad de los primitives tipo PYRAMID
-	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
-		if (!state.key4Pressed) {
-			primitives[PrimitiveType::PYRAMID]->isVisible = !primitives[PrimitiveType::PYRAMID]->isVisible;
-			state.key4Pressed = true;
-		}
-	}
-	else
-		state.key4Pressed = false;
-}
-
 void main()
 {
 	srand(time(NULL));
@@ -139,6 +57,9 @@ void main()
 	//Definimos espacio de trabajo
 	glfwMakeContextCurrent(window);
 
+	//Inizializo el Inputmanager
+	IM->Init(window);
+
 	//Permitimos a GLEW usar funcionalidades experimentales
 	glewExperimental = GL_TRUE;
 
@@ -156,7 +77,6 @@ void main()
 
 		std::unordered_map<PrimitiveType, Primitive*> primitives;
 
-		InputState inputs;
 		Camera camera;
 
 		//Inicializando el mapa
@@ -167,32 +87,19 @@ void main()
 		float lastFrame = 0.0f;
 
 		//Generamos el game loop
-		while (!glfwWindowShouldClose(window)) {
+		while (!IM->Listen()) {
 
 			float currentFrame = (float)glfwGetTime();
 			float deltaTime = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 
-			glfwPollEvents();
-
-			if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-				if (!inputs.spacePressed) {
-					inputs.isPaused = !inputs.isPaused;
-					inputs.spacePressed = true;
-				}
-			}
-			else
-				inputs.spacePressed = false;
-
-			if (!inputs.isPaused)
+			if (!IM->GetKey(GLFW_KEY_SPACE, HOLD))
 			{
-				ProcessInput(window, inputs, primitives);
-
 				for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
 					it->second->Update(deltaTime);
 			}
 
-			if (inputs.isWireframe)
+			if (IM->GetKey(GLFW_KEY_1, HOLD))
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			else
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
