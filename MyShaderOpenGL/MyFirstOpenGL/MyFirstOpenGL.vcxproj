@@ -22,10 +22,13 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="Ortoedro.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MyFirstFragmentShader.glsl" />
@@ -37,9 +40,12 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Ortoedro.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Pyramid.h" />
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
