@@ -1,19 +1,18 @@
 #include "Pyramid.h"
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
+
 Pyramid::Pyramid()
 {
 	Init();
 }
 
-
-
 void Pyramid::Init()
 {
 	//Se cargan los shaders
-	shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
-	shader.fragmentShader = LoadFragmentShader("PyramidFragmentShader.glsl");
-	shaderProgram = CreateProgram(shader);
+	shader.vertexShader   = meshRenderer->LoadVertexShader("MyFirstVertexShader.glsl");
+	shader.fragmentShader = meshRenderer->LoadFragmentShader("PyramidFragmentShader.glsl");
+	shaderProgram         = meshRenderer->CreateProgram(shader);
 
 	float vertices[] =
 	{
@@ -66,41 +65,32 @@ void Pyramid::Init()
 				0.5f, -0.5f, -0.5f,
 	};
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
+	// Inicializamos el MeshRenderer con la geometria de la piramide
+	meshRenderer->Init(vertices, sizeof(vertices));
 
 	//Transform
-	position = pyramidPosition;
-	rotation = pyramidRotation;
-	scale = pyramidScale;
-	forward = pyramidForward;
-	speed = pyramidSpeed;
-	bounds = pyramidBounds;
-	angle = pyramidAngle;
+	transform->position = glm::vec3(1.f, 0.0f, 0.0f);
+	transform->rotation = glm::vec3(0.0f);
+	transform->scale    = glm::vec3(0.25f);
+	forward             = glm::vec3(0.0f, 1.0f, 0.0f);
+	speed  = pyramidSpeed;
+	bounds  = glm::vec2(1.f, -1.f);
+	angle = glm::vec3(50.0f, 50.0f, 0.0f);
 }
 
 void Pyramid::Update(float dt)
 {
 	//Rotation
-	rotation.x += angle.x * speed * dt;
-	rotation.y += angle.y * speed * dt;
+	transform->rotation.x += angle.x * speed * dt;
+	transform->rotation.y += angle.y * speed * dt;
 
-	if (rotation.x > maxAngle) rotation.x -= maxAngle;
-	if (rotation.y > maxAngle) rotation.y -= maxAngle;
+	if (transform->rotation.x > maxAngle) transform->rotation.x -= maxAngle;
+	if (transform->rotation.y > maxAngle) transform->rotation.y -= maxAngle;
 
 	//Movement
-	position = position + forward * speed * dt;
+	transform->position = transform->position + forward * speed * dt;
 
-	if (position.y >= bounds.x || position.y <= bounds.y)
+	if (transform->position.y >= bounds.x || transform->position.y <= bounds.y)
 		forward = forward * -1.f;
 
 	//Color
@@ -119,15 +109,15 @@ void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMat
 	glUseProgram(shaderProgram);
 
 	//Genero matrices de transformacion (model)
-	glm::mat4 translationMatrix = GenerateTranslationMatrix(position);
+	glm::mat4 translationMatrix = transform->GenerateTranslationMatrix(transform->position);
 
 	//Rotamos
-	glm::mat4 rotationMatrixX = GenerateRotationMatrix(glm::vec3(1.f, 0.f, 0.f), rotation.x);
-	glm::mat4 rotationMatrixY = GenerateRotationMatrix(glm::vec3(0.f, 1.f, 0.f), rotation.y);
-	glm::mat4 rotationMatrixZ = GenerateRotationMatrix(glm::vec3(0.f, 0.f, 1.f), rotation.z);
+	glm::mat4 rotationMatrixX = transform->GenerateRotationMatrix(glm::vec3(1.f, 0.f, 0.f), transform->rotation.x);
+	glm::mat4 rotationMatrixY = transform->GenerateRotationMatrix(glm::vec3(0.f, 1.f, 0.f), transform->rotation.y);
+	glm::mat4 rotationMatrixZ = transform->GenerateRotationMatrix(glm::vec3(0.f, 0.f, 1.f), transform->rotation.z);
 
 	glm::mat4 rotationMatrix = rotationMatrixX * rotationMatrixY * rotationMatrixZ;
-	glm::mat4 scaleMatrix = GenerateScaleMatrix(scale);
+	glm::mat4 scaleMatrix = transform->GenerateScaleMatrix(transform->scale);
 
 	//Vector de colores
 	glm::vec3 colors[NUM_COLORS] =
@@ -148,11 +138,8 @@ void Pyramid::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMat
 	//Desactivar el culling para que se vea toda la piramide
 	glDisable(GL_CULL_FACE);
 
-	//Definimos que queremos usar el VAO con los puntos
-	glBindVertexArray(VAO);
-
 	//Definimos que queremos dibujar
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+	meshRenderer->Draw(vertexCount);
 
 	//Dejamos de usar el VAO indicado anteriormente
 	glBindVertexArray(0);
