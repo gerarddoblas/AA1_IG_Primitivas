@@ -26,6 +26,7 @@
     <ClCompile Include="Ortoedro.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Pyramid.cpp" />
+    <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +43,7 @@
     <ClInclude Include="Ortoedro.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Pyramid.h" />
+    <ClInclude Include="RenderManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
