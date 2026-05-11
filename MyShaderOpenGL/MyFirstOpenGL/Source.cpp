@@ -36,16 +36,16 @@ void main()
 	//Inizializo el InputManager
 	IM->Init(RM->GetWindow());
 
-		std::unordered_map<PrimitiveType, Primitive*> primitives;
+	std::unordered_map<PrimitiveType, Primitive*> primitives;
 
-		Camera camera;
+	Camera camera;
 
-		//Inicializando el mapa
-		primitives[PrimitiveType::CUBE] = new Cube();
-		primitives[PrimitiveType::ORTOEDRO] = new Ortoedro();
-		primitives[PrimitiveType::PYRAMID] = new Pyramid();
+	//Inicializando el mapa
+	primitives[PrimitiveType::CUBE] = new Cube();
+	primitives[PrimitiveType::ORTOEDRO] = new Ortoedro();
+	primitives[PrimitiveType::PYRAMID] = new Pyramid();
 
-		float lastFrame = 0.0f;
+	float lastFrame = 0.0f;
 
 		//Generamos el game loop
 		while (!IM->Listen()) {
@@ -54,23 +54,27 @@ void main()
 			float deltaTime = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 
+			//Cambiar a InputManager
 			if (!IM->GetKey(GLFW_KEY_SPACE, HOLD))
 			{
 				for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
 					it->second->Update(deltaTime);
 			}
 
+			//Cambiar al Update del RM
 			if (IM->GetKey(GLFW_KEY_1, HOLD))
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			else
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 			//Genero matriz de vista
+			//Cambiar a clase camara
 			glm::mat4 viewMatrix = camera.GetViewMatrix();
 			glm::mat4 projectionMatrix = camera.GetProjectionMatrix((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT);
 
 			RM->ClearScreen();
 
+			//Cambiar al RenderManager
 			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
 			{
 				if(it->second->isVisible)
