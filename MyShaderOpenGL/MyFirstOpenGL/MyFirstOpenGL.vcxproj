@@ -48,6 +48,7 @@
     <ClInclude Include="Ortoedro.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Pyramid.h" />
+    <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="RenderManager.h" />
   </ItemGroup>

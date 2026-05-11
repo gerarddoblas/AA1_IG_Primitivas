@@ -13,6 +13,7 @@
 #include <vector>
 #include "InputManager.h"
 #include "Rendermanager.h"
+#include "TimeManager.h"
 
 const float SPEED_MULTIPLIER_UP = 1.1f;
 const float SPEED_MULTIPLIER_DOWN = 0.9f;
@@ -41,10 +42,11 @@ void main()
 	Camera camera;
 
 	//Inicializando el mapa
-	_gameObjects.push_back(new Cube());/* [PrimitiveType::CUBE] = new Cube();*/
-	/*_gameObjects[PrimitiveType::ORTOEDRO] = new Ortoedro();
-	_gameObjects[PrimitiveType::PYRAMID] = new Pyramid();*/
+	_gameObjects.push_back(new Cube());
+	_gameObjects.push_back(new Ortoedro());
+	_gameObjects.push_back(new Pyramid());
 
+	bool _isPaused = false;
 	float lastFrame = 0.0f;
 
 		//Generamos el game loop
@@ -55,29 +57,40 @@ void main()
 			lastFrame = currentFrame;
 
 			//Cambiar a TimeManager
-			if (!IM->GetKey(GLFW_KEY_SPACE, HOLD))
-			{
+			if (IM->GetKey(GLFW_KEY_SPACE, DOWN))
+				_isPaused != _isPaused;
+			if(!_isPaused)
+				TIME.Update();
+
+				RM->Update(TIME.GetDeltaTime());
+				//RM->Update(deltaTime);
+
+				//Genero matriz de vista
+				//Cambiar a clase camara
+				glm::mat4 viewMatrix = camera.GetViewMatrix();
+				glm::mat4 projectionMatrix = camera.GetProjectionMatrix((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT);
+
+				RM->ClearScreen();
+
 				for (short i = _gameObjects.size() - 1; i >= 0; i--)
-					_gameObjects[i]->Update(deltaTime);
-			}
+				{
+					if (_gameObjects[i]->isVisible)
+					{
+						_gameObjects[i]->Update(TIME.GetDeltaTime());
+						//_gameObjects[i]->Update(deltaTime);
+					}
 
+				}
+
+				//Cambiar al RenderManager
+				for (short i = _gameObjects.size() - 1; i >= 0; i--)
+				{
+					if (_gameObjects[i]->isVisible)
+						_gameObjects[i]->Render(viewMatrix, projectionMatrix);
+				}
+
+				RM->RenderScreen();
 			
-
-			//Genero matriz de vista
-			//Cambiar a clase camara
-			glm::mat4 viewMatrix = camera.GetViewMatrix();
-			glm::mat4 projectionMatrix = camera.GetProjectionMatrix((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT);
-
-			RM->ClearScreen();
-
-			//Cambiar al RenderManager
-			for (short i = _gameObjects.size() - 1; i >= 0; i--)
-			{
-				if(_gameObjects[i]->isVisible)
-					_gameObjects[i]->Render(viewMatrix, projectionMatrix);
-			}
-
-			RM->RenderScreen();
 		}
 
 		for (short i = _gameObjects.size() - 1; i >= 0; i--)

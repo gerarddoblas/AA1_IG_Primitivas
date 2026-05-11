@@ -1,4 +1,5 @@
 #include "RenderManager.h"
+#include "InputManager.h"
 #include <cassert>
 
 #include <iostream>
@@ -98,9 +99,9 @@ void RenderManager::RenderScreen()
 
 void RenderManager::Update(float dt)
 {
-	////Cambiar al Update del RM
-	//if (IM->GetKey(GLFW_KEY_1, HOLD))
-	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//else
-	//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//Cambiar al Update del RM
+	if (IM->GetKey(GLFW_KEY_1, HOLD))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
