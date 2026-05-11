@@ -32,6 +32,7 @@ public:
     void Release();
     void ClearScreen();
     void RenderScreen();
+    void Update(float dt);
     GLFWwindow* GetWindow() const { return _window; }
 
     std::string Load_File(const std::string& filePath);

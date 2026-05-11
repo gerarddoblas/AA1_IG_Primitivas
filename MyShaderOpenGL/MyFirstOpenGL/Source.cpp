@@ -10,7 +10,7 @@
 #include "Cube.h"
 #include "Camera.h"
 #include "Pyramid.h"
-#include <unordered_map>
+#include <vector>
 #include "InputManager.h"
 #include "Rendermanager.h"
 
@@ -36,14 +36,14 @@ void main()
 	//Inizializo el InputManager
 	IM->Init(RM->GetWindow());
 
-	std::unordered_map<PrimitiveType, Primitive*> primitives;
+	std::vector<GameObject*> _gameObjects;
 
 	Camera camera;
 
 	//Inicializando el mapa
-	primitives[PrimitiveType::CUBE] = new Cube();
-	primitives[PrimitiveType::ORTOEDRO] = new Ortoedro();
-	primitives[PrimitiveType::PYRAMID] = new Pyramid();
+	_gameObjects.push_back(new Cube());/* [PrimitiveType::CUBE] = new Cube();*/
+	/*_gameObjects[PrimitiveType::ORTOEDRO] = new Ortoedro();
+	_gameObjects[PrimitiveType::PYRAMID] = new Pyramid();*/
 
 	float lastFrame = 0.0f;
 
@@ -54,18 +54,14 @@ void main()
 			float deltaTime = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 
-			//Cambiar a InputManager
+			//Cambiar a TimeManager
 			if (!IM->GetKey(GLFW_KEY_SPACE, HOLD))
 			{
-				for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-					it->second->Update(deltaTime);
+				for (short i = _gameObjects.size() - 1; i >= 0; i--)
+					_gameObjects[i]->Update(deltaTime);
 			}
 
-			//Cambiar al Update del RM
-			if (IM->GetKey(GLFW_KEY_1, HOLD))
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			else
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			
 
 			//Genero matriz de vista
 			//Cambiar a clase camara
@@ -75,19 +71,19 @@ void main()
 			RM->ClearScreen();
 
 			//Cambiar al RenderManager
-			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
+			for (short i = _gameObjects.size() - 1; i >= 0; i--)
 			{
-				if(it->second->isVisible)
-					it->second->Render(viewMatrix, projectionMatrix);
+				if(_gameObjects[i]->isVisible)
+					_gameObjects[i]->Render(viewMatrix, projectionMatrix);
 			}
 
 			RM->RenderScreen();
 		}
 
-		for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-			delete it->second;
+		for (short i = _gameObjects.size() - 1; i >= 0; i--)
+			delete _gameObjects[i];
 
-		primitives.clear();
+		_gameObjects.clear();
 
 		RM->Release();
 

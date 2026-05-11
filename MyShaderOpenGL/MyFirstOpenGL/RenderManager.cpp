@@ -95,3 +95,12 @@ void RenderManager::RenderScreen()
 	//Cambia un buffer por otro
 	glfwSwapBuffers(_window);
 }
+
+void RenderManager::Update(float dt)
+{
+	////Cambiar al Update del RM
+	//if (IM->GetKey(GLFW_KEY_1, HOLD))
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//else
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
