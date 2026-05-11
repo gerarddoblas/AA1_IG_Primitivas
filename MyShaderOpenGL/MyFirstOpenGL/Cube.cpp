@@ -8,9 +8,9 @@ Cube::Cube() {
 
 void Cube::Init() {
 
-    shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
-    shader.fragmentShader = LoadFragmentShader("MyFirstFragmentShader.glsl");
-    shaderProgram = CreateProgram(shader);
+    shader.vertexShader   = meshRenderer->LoadVertexShader("MyFirstVertexShader.glsl");
+    shader.fragmentShader = meshRenderer->LoadFragmentShader("MyFirstFragmentShader.glsl");
+    shaderProgram         = meshRenderer->CreateProgram(shader);
 
     float vertices[] = {
 
@@ -34,57 +34,41 @@ void Cube::Init() {
          0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f
     };
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
+    // Inicializamos el MeshRenderer
+    meshRenderer->Init(vertices, sizeof(vertices));
 
     //Transform
-    position = cubePosition;
-    rotation = cubeRotation;
-    scale = cubeScale;
-    forward = cubeForward;
-    speed = cubeSpeed;
-    bounds = cubeBounds;
-    angle = cubeAngle;
+    transform->position = glm::vec3(-1.f, 0.0f, 0.0f);
+    transform->rotation = glm::vec3(0.0f);
+    transform->scale    = glm::vec3(0.25f);
+    forward             = glm::vec3(0.0f, 1.0f, 0.0f);
+    speed               = cubeSpeed;
+    bounds              = glm::vec2(1.f, -1.f);
+    angle               = glm::vec3(50.0f, 50.0f, 0.0f);
 }
 
 void Cube::Update(float dt)
 {
     //Rotation
-    
-    rotation.y += angle.y * speed * dt;
-
-    if (rotation.y > maxAngle) rotation.y -= maxAngle;
+    transform->rotation.y += angle.y * speed * dt;
+    if (transform->rotation.y > maxAngle) transform->rotation.y -= maxAngle;
 
     //Movement
-    position = position + forward * speed * dt;
-
-    if (position.y >= bounds.x || position.y <= bounds.y)
+    transform->position = transform->position + forward * speed * dt;
+    if (transform->position.y >= bounds.x || transform->position.y <= bounds.y)
         forward = forward * -1.f;
 }
 
 void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
     glUseProgram(shaderProgram);
 
-    glm::mat4 model = GenerateTranslationMatrix(position) * GenerateRotationMatrix(glm::vec3(0, 1, 0), rotation.y);
-
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(GenerateTranslationMatrix(position)));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(GenerateRotationMatrix(glm::vec3(0, 1, 0), rotation.y)));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(GenerateScaleMatrix(scale)));
-
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(transform->GenerateTranslationMatrix(transform->position)));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(transform->GenerateRotationMatrix(glm::vec3(0, 1, 0), transform->rotation.y)));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(transform->GenerateScaleMatrix(transform->scale)));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
     glDisable(GL_CULL_FACE);
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-    glBindVertexArray(0);
+    meshRenderer->Draw(vertexCount);
     glEnable(GL_CULL_FACE);
 }

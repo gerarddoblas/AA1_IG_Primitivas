@@ -6,11 +6,12 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <unordered_map>
+#include "GameObject.h"
 #include "Ortoedro.h"
 #include "Cube.h"
 #include "Camera.h"
 #include "Pyramid.h"
-#include <unordered_map>
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 720
@@ -27,7 +28,7 @@ void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHe
 	glViewport(0, 0, iFrameBufferWidth, iFrameBufferHeight);
 }
 
-enum PrimitiveType
+enum GameObjectType
 {
 	CUBE,
 	ORTOEDRO,
@@ -48,15 +49,15 @@ struct InputState
 	bool key4Pressed = false;
 };
 
-void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<PrimitiveType, Primitive*>& primitives) {
+void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<GameObjectType, GameObject*>& gameObjects) {
 
 	//Aceleracción del movimiento al pulsar la M
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 	{
 		if (!state.keyMPressed)
 		{
-			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-				it->second->speed *= SPEED_MULTIPLIER_UP;
+			for (std::pair<const GameObjectType, GameObject*>& go : gameObjects)
+				go.second->speed *= SPEED_MULTIPLIER_UP;
 			state.keyMPressed = true;
 		}
 	}
@@ -68,8 +69,8 @@ void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<Prim
 	{
 		if (!state.keyNPressed)
 		{
-			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-				it->second->speed *= SPEED_MULTIPLIER_DOWN;
+			for (std::pair<const GameObjectType, GameObject*>& go : gameObjects)
+				go.second->speed *= SPEED_MULTIPLIER_DOWN;
 			state.keyNPressed = true;
 		}
 	}
@@ -89,7 +90,7 @@ void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<Prim
 	//Activar visibilidad de los primitives tipo CUBE
 	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
 		if (!state.key2Pressed) {
-			primitives[PrimitiveType::CUBE]->isVisible = !primitives[PrimitiveType::CUBE]->isVisible;
+			gameObjects[GameObjectType::CUBE]->isVisible = !gameObjects[GameObjectType::CUBE]->isVisible;
 			state.key2Pressed = true;
 		}
 	}
@@ -99,7 +100,7 @@ void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<Prim
 	//Activar visibilidad de los primitives tipo ORTOEDRO
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
 		if (!state.key3Pressed) {
-			primitives[PrimitiveType::ORTOEDRO]->isVisible = !primitives[PrimitiveType::ORTOEDRO]->isVisible;
+			gameObjects[GameObjectType::ORTOEDRO]->isVisible = !gameObjects[GameObjectType::ORTOEDRO]->isVisible;
 			state.key3Pressed = true;
 		}
 	}
@@ -109,7 +110,7 @@ void ProcessInput(GLFWwindow* window, InputState& state, std::unordered_map<Prim
 	//Activar visibilidad de los primitives tipo PYRAMID
 	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
 		if (!state.key4Pressed) {
-			primitives[PrimitiveType::PYRAMID]->isVisible = !primitives[PrimitiveType::PYRAMID]->isVisible;
+			gameObjects[GameObjectType::PYRAMID]->isVisible = !gameObjects[GameObjectType::PYRAMID]->isVisible;
 			state.key4Pressed = true;
 		}
 	}
@@ -154,15 +155,15 @@ void main()
 		//Definimos color para limpiar el buffer de color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		std::unordered_map<PrimitiveType, Primitive*> primitives;
+		std::unordered_map<GameObjectType, GameObject*> gameObjects;
 
 		InputState inputs;
 		Camera camera;
 
 		//Inicializando el mapa
-		primitives[PrimitiveType::CUBE] = new Cube();
-		primitives[PrimitiveType::ORTOEDRO] = new Ortoedro();
-		primitives[PrimitiveType::PYRAMID] = new Pyramid();
+		gameObjects[GameObjectType::CUBE] = new Cube();
+		gameObjects[GameObjectType::ORTOEDRO] = new Ortoedro();
+		gameObjects[GameObjectType::PYRAMID] = new Pyramid();
 
 		float lastFrame = 0.0f;
 
@@ -186,10 +187,10 @@ void main()
 
 			if (!inputs.isPaused)
 			{
-				ProcessInput(window, inputs, primitives);
+				ProcessInput(window, inputs, gameObjects);
 
-				for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-					it->second->Update(deltaTime);
+				for (std::pair<const GameObjectType, GameObject*>& go : gameObjects)
+					go.second->Update(deltaTime);
 			}
 
 			if (inputs.isWireframe)
@@ -204,18 +205,18 @@ void main()
 			//Limpiamos los buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-			for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
+			for (std::pair<const GameObjectType, GameObject*>& go : gameObjects)
 			{
-				if(it->second->isVisible)
-					it->second->Render(viewMatrix, projectionMatrix);
+				if(go.second->isVisible)
+					go.second->Render(viewMatrix, projectionMatrix);
 			}
 			glfwSwapBuffers(window);
 		}
 
-		for (std::unordered_map<PrimitiveType, Primitive*>::iterator it = primitives.begin(); it != primitives.end(); it++)
-			delete it->second;
+		for (std::pair<const GameObjectType, GameObject*>& go : gameObjects)
+			delete go.second;
 
-		primitives.clear();
+		gameObjects.clear();
 
 	}else {
 		std::cout << "Ha petao." << std::endl;
