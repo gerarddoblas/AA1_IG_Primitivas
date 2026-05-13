@@ -4,101 +4,86 @@
 #include <gtc/type_ptr.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <iostream>
-#include <string>
-#include <fstream>
-#include "Ortoedro.h"
-#include "Cube.h"
-#include "Camera.h"
-#include "Pyramid.h"
 #include <vector>
+
 #include "InputManager.h"
 #include "Rendermanager.h"
 #include "TimeManager.h"
-
-const float SPEED_MULTIPLIER_UP = 1.1f;
-const float SPEED_MULTIPLIER_DOWN = 0.9f;
-
-enum PrimitiveType
-{
-	CUBE,
-	ORTOEDRO,
-	PYRAMID
-};
+#include "SceneManager.h"
+#include "MainScene.h"
+#include "Camera.h"
 
 void main()
 {
 	srand(time(NULL));
-	//Inicializamos GLFW para gestionar ventanas e inputs
+
+	// Inicializamos GLFW
 	glfwInit();
 
-	//Inizializo el RenderManager
+	// Inizializo el RenderManager
 	RM->Init();
 
-	//Inizializo el InputManager
+	// Inizializo el InputManager
 	IM->Init(RM->GetWindow());
 
-	std::vector<GameObject*> _gameObjects;
-
+	// Creamos la cámara y la escena principal
 	Camera camera;
-
-	//Inicializando el mapa
-	_gameObjects.push_back(new Cube());
-	_gameObjects.push_back(new Ortoedro());
-	_gameObjects.push_back(new Pyramid());
+	SM.AddScene("Main", new MainScene());
+	SM.InitFirstScene("Main");
 
 	bool _isPaused = false;
 	float lastFrame = 0.0f;
 
-		//Generamos el game loop
-		while (!IM->Listen()) {
+	// Generamos el game loop
+	while (!IM->Listen()) {
 
-			float currentFrame = (float)glfwGetTime();
-			float deltaTime = currentFrame - lastFrame;
-			lastFrame = currentFrame;
+		float currentFrame = (float)glfwGetTime();
+		float deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 
-			//Cambiar a TimeManager
-			if (IM->GetKey(GLFW_KEY_SPACE, DOWN))
-				_isPaused != _isPaused;
-			if(!_isPaused)
-				TIME.Update();
+		// Control de pausa
+		if (IM->GetKey(GLFW_KEY_SPACE, DOWN))
+			_isPaused = !_isPaused;
 
-				RM->Update(TIME.GetDeltaTime());
-				//RM->Update(deltaTime);
+		TIME.Update();
 
-				//Genero matriz de vista
-				//Cambiar a clase camara
-				glm::mat4 viewMatrix = camera.GetViewMatrix();
-				glm::mat4 projectionMatrix = camera.GetProjectionMatrix((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT);
+		if (!_isPaused) {
+			// Inputs de velocidad (M: +10%, N: -10%)
+			if (IM->GetKey(GLFW_KEY_M, DOWN)) TIME.SetTimeMultiplier(TIME.GetTimeMultiplier() * 1.1f);
+			if (IM->GetKey(GLFW_KEY_N, DOWN)) TIME.SetTimeMultiplier(TIME.GetTimeMultiplier() * 0.9f);
 
-				RM->ClearScreen();
+			// Input de Wireframe (Tecla 1)
+			if (IM->GetKey(GLFW_KEY_1, DOWN)) RM->ToggleWireframe();
 
-				for (short i = _gameObjects.size() - 1; i >= 0; i--)
-				{
-					if (_gameObjects[i]->isVisible)
-					{
-						_gameObjects[i]->Update(TIME.GetDeltaTime());
-						//_gameObjects[i]->Update(deltaTime);
-					}
-
-				}
-
-				//Cambiar al RenderManager
-				for (short i = _gameObjects.size() - 1; i >= 0; i--)
-				{
-					if (_gameObjects[i]->isVisible)
-						_gameObjects[i]->Render(viewMatrix, projectionMatrix);
-				}
-
-				RM->RenderScreen();
+			// Inputs de visibilidad (2: Cubo, 3: Ortoedro, 4: Pirámide)
+			if (SM.GetCurrentScene()) {
+				auto& objects = SM.GetCurrentScene()->GetObjects();
+				if (IM->GetKey(GLFW_KEY_2, DOWN) && objects.size() > 0) objects[0]->isVisible = !objects[0]->isVisible;
+				if (IM->GetKey(GLFW_KEY_3, DOWN) && objects.size() > 1) objects[1]->isVisible = !objects[1]->isVisible;
+				if (IM->GetKey(GLFW_KEY_4, DOWN) && objects.size() > 2) objects[2]->isVisible = !objects[2]->isVisible;
+			}
 			
+			// Actualizamos el SceneManager
+			SM.UpdateCurrentScene(TIME.GetDeltaTime());
 		}
 
-		for (short i = _gameObjects.size() - 1; i >= 0; i--)
-			delete _gameObjects[i];
+		RM->Update(TIME.GetDeltaTime());
 
-		_gameObjects.clear();
+		// Generamos matrices de cámara
+		glm::mat4 viewMatrix = camera.GetViewMatrix();
+		glm::mat4 projectionMatrix = camera.GetProjectionMatrix((float)WINDOW_WIDTH / (float)WINDOW_HEIGHT);
 
-		RM->Release();
+		// Dibujado
+		RM->ClearScreen();
 
-		glfwTerminate();
+		// El SceneManager renderiza
+		if (SM.GetCurrentScene()) {
+			SM.GetCurrentScene()->Render(viewMatrix, projectionMatrix);
+		}
+
+		RM->RenderScreen();
+	}
+
+	RM->Release();
+	glfwTerminate();
 }
