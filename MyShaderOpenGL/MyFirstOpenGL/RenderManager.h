@@ -1,11 +1,13 @@
 #pragma once
 
-
 #include <string>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 #include <unordered_map>
+#include <fstream>
+#include <vector>
+#include <iostream>
 
 #define RM RenderManager::GetInstance()
 
@@ -32,6 +34,7 @@ public:
     void Release();
     void ClearScreen();
     void RenderScreen();
+    void ToggleWireframe();
     void Update(float dt);
     GLFWwindow* GetWindow() const { return _window; }
 
@@ -43,20 +46,19 @@ public:
 
 private:
     RenderManager() = default;
-    RenderManager(RenderManager&) = delete;
+    RenderManager(const RenderManager&) = delete;
     RenderManager& operator=(const RenderManager&) = delete;
     ~RenderManager();
+
+    void InitGLFW();
+    void CreateWindow();
+    static void ResizeWindow(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHeight);
 
     GLFWwindow* _window = nullptr;
     const int OPENGL_MAJOR = 4;
     const int OPENGL_MINOR = 4;
     const char* WINDOW_TITLE = "My Engine";
 
-    void InitGLFW();
-    void CreateWindow();
-
-    static void ResizeWindow(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHeight);
-
     std::unordered_map<std::string, GLuint> _cacheShaders;
+    bool _isWireframe = false;
 };
-

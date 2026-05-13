@@ -31,6 +31,8 @@ private:
 	float _frameTime;
 
 
+	float _timeMultiplier = 1.0f;
+
 public:
 	static TimeManager& Instance()
 	{
@@ -39,7 +41,9 @@ public:
 		return instance;
 	}
 
-	float GetDeltaTime() { return _deltaTime; }
+	float GetDeltaTime() { return _deltaTime * _timeMultiplier; }
+	void SetTimeMultiplier(float m) { _timeMultiplier = m; }
+	float GetTimeMultiplier() const { return _timeMultiplier; }
 	float GetElapsedTime() { return _elapsedTime; }
 	float GetFrameTime() { return _frameTime; }
 

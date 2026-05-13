@@ -2,14 +2,11 @@
 #include "InputManager.h"
 #include <cassert>
 
-#include <iostream>
-
 RenderManager::~RenderManager()
 {
-	for (std::unordered_map<std::string, GLuint>::iterator it = _cacheShaders.begin(); it != _cacheShaders.end(); it++)
+	for (auto const& [path, shader] : _cacheShaders)
 	{
-		//Se elimina cada Shader
-		glDeleteShader(it->second);
+		glDeleteShader(shader);
 	}
 }
 
@@ -20,7 +17,6 @@ void RenderManager::ResizeWindow(GLFWwindow* window, int iFrameBufferWidth, int 
 
 void RenderManager::InitGLFW()
 {
-	//Configurar la ventana
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR);
@@ -29,79 +25,126 @@ void RenderManager::InitGLFW()
 
 void RenderManager::CreateWindow()
 {
-		//Inicializamos la ventana
-		_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
-		
-		if (!_window)
-			throw "Ha habido un error al inicializar la ventana";
+	_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
+	if (!_window) throw "Error: GLFW Window creation failed";
 
-		//Asignamos función de callback para cuando el frame buffer es modificado
-		glfwSetFramebufferSizeCallback(_window, ResizeWindow);
-
-		//Definimos espacio de trabajo
-		glfwMakeContextCurrent(_window);
+	glfwSetFramebufferSizeCallback(_window, ResizeWindow);
+	glfwMakeContextCurrent(_window);
 }
 
 void RenderManager::Init()
 {
 	try
 	{
-		//Se inicializa la ventana
 		InitGLFW();
-
-		//Se crea la ventana
 		CreateWindow();
 
-		//Permitimos a GLEW usar funcionalidades experimentales
 		glewExperimental = GL_TRUE;
+		if (glewInit() != GLEW_OK) throw "Error: GLEW initialization failed";
 
-		//Activamos cull face
-		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_CULL_FACE); // Lo desactivamos para que se vean todas las caras
+		//glCullFace(GL_BACK);
 
-		//Indicamos lado del culling
-		glCullFace(GL_FRONT);
-
-		//Inicializamos GLEW y controlamos errores
-		if (glewInit() == GLEW_OK) {
-
-			//Definimos color para limpiar el buffer de color
-			glClearColor(0.f, 0.f, 0.f, 1.f);
-
-		}
-		else
-			throw "El glewInit fallo";
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	}
-	catch (...)
+	catch (const char* msg)
 	{
+		std::cerr << msg << std::endl;
 		Release();
-		return;
 	}
 }
 
 void RenderManager::Release()
 {
-	//Se destruye la Ventana
-	glfwDestroyWindow(_window);
-	_window = nullptr;
+	if (_window)
+	{
+		glfwDestroyWindow(_window);
+		_window = nullptr;
+	}
 }
 
 void RenderManager::ClearScreen()
 {
-	//Limpiamos los tres buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void RenderManager::RenderScreen()
 {
-	//Cambia un buffer por otro
 	glfwSwapBuffers(_window);
 }
 
+void RenderManager::ToggleWireframe() { _isWireframe = !_isWireframe; }
+
 void RenderManager::Update(float dt)
 {
-	//Cambiar al Update del RM
-	if (IM->GetKey(GLFW_KEY_1, HOLD))
+	if (_isWireframe)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+std::string RenderManager::Load_File(const std::string& filePath)
+{
+	std::ifstream file(filePath);
+	if (!file.is_open()) return "";
+	return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+}
+
+GLuint RenderManager::LoadVertexShader(const std::string& filePath)
+{
+	if (_cacheShaders.count(filePath)) return _cacheShaders[filePath];
+
+	std::string source = Load_File(filePath);
+	if (source.empty()) return 0;
+
+	const char* src = source.c_str();
+	GLuint shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(shader, 1, &src, nullptr);
+	glCompileShader(shader);
+
+	_cacheShaders[filePath] = shader;
+	return shader;
+}
+
+GLuint RenderManager::LoadFragmentShader(const std::string& filePath)
+{
+	if (_cacheShaders.count(filePath)) return _cacheShaders[filePath];
+
+	std::string source = Load_File(filePath);
+	if (source.empty()) return 0;
+
+	const char* src = source.c_str();
+	GLuint shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(shader, 1, &src, nullptr);
+	glCompileShader(shader);
+
+	_cacheShaders[filePath] = shader;
+	return shader;
+}
+
+GLuint RenderManager::LoadGeometryShader(const std::string& filePath)
+{
+	if (_cacheShaders.count(filePath)) return _cacheShaders[filePath];
+
+	std::string source = Load_File(filePath);
+	if (source.empty()) return 0;
+
+	const char* src = source.c_str();
+	GLuint shader = glCreateShader(GL_GEOMETRY_SHADER);
+	glShaderSource(shader, 1, &src, nullptr);
+	glCompileShader(shader);
+
+	_cacheShaders[filePath] = shader;
+	return shader;
+}
+
+GLuint RenderManager::CreateProgram(const ShaderProgram& shaders)
+{
+	GLuint program = glCreateProgram();
+	if (shaders.vertexShader) glAttachShader(program, shaders.vertexShader);
+	if (shaders.geometryShader) glAttachShader(program, shaders.geometryShader);
+	if (shaders.fragmentShader) glAttachShader(program, shaders.fragmentShader);
+	glLinkProgram(program);
+	return program;
 }
