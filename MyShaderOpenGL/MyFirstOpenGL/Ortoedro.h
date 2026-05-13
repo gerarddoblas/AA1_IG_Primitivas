@@ -12,7 +12,6 @@ public:
 
 private:
 	GLuint shaderProgram = 0;
-	MeshRenderer::ShaderProgram shader;
 
 	float timeAccumulator = 0.0f;
 

@@ -13,7 +13,6 @@ public:
 	glm::mat4 GetScaleMatrix() const;
 	glm::mat4 GetModelMatrix() const;
 
-	// Metodos auxiliares que tenias originalmente
 	glm::mat4 GenerateScaleMatrix(glm::vec3 scaleAxis) const;
 	glm::mat4 GenerateRotationMatrix(glm::vec3 axis, float degrees) const;
 	glm::mat4 GenerateTranslationMatrix(glm::vec3 translation) const;

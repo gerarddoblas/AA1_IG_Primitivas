@@ -1,19 +1,17 @@
 #version 440 core
 
+uniform float windowHeight;
 out vec4 fragColor;
 
 void main()
 {
-	fragColor = vec4(1.0, 1.0, 1.0, 1.0); 
-
-	if(gl_FragCoord.y >= 360.0)
-	{
-		fragColor = vec4(1.0, 1.0, 0.0, 1.0);
-	}
-	else
-	{
-		fragColor = vec4(1.0, 0.5, 0.0, 1.0);
-	}
-
+    // pixel por encima de la mitad de la ventana
+    if(gl_FragCoord.y >= windowHeight / 2.0)
+    {
+        fragColor = vec4(1.0, 1.0, 0.0, 1.0); // Amarillo
+    }
+    else
+    {
+        fragColor = vec4(1.0, 0.5, 0.0, 1.0); // Naranja
+    }
 }
-

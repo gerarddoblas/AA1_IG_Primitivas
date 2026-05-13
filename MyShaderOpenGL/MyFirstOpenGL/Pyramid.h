@@ -13,7 +13,6 @@ public:
 
 private:
 	GLuint shaderProgram = 0;
-	MeshRenderer::ShaderProgram shader;
 
 	// Propiedades de movimiento
 	glm::vec3 forward = glm::vec3(0.f);
