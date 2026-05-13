@@ -12,7 +12,6 @@ public:
 
 private:
 	GLuint shaderProgram = 0;
-	MeshRenderer::ShaderProgram shader;
 
 	// Configuracion cubo
 	const float cubeSpeed = 1.f;

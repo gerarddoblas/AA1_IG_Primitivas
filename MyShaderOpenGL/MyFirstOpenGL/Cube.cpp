@@ -2,18 +2,18 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 #include <iostream>
+#include "RenderManager.h"
 Cube::Cube() {
     Init();
 }
 
 void Cube::Init() {
-
-    shader.vertexShader   = meshRenderer->LoadVertexShader("MyFirstVertexShader.glsl");
-    shader.fragmentShader = meshRenderer->LoadFragmentShader("MyFirstFragmentShader.glsl");
-    shaderProgram         = meshRenderer->CreateProgram(shader);
+    RenderManager::ShaderProgram shaders;
+    shaders.vertexShader = RM->LoadVertexShader("MyFirstVertexShader.glsl");
+    shaders.fragmentShader = RM->LoadFragmentShader("MyFirstFragmentShader.glsl");
+    shaderProgram = RM->CreateProgram(shaders);
 
     float vertices[] = {
-
         // Cara trasera
         -0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f,  0.5f, -0.5f,
          0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f,
@@ -40,11 +40,11 @@ void Cube::Init() {
     //Transform
     transform->position = glm::vec3(-1.f, 0.0f, 0.0f);
     transform->rotation = glm::vec3(0.0f);
-    transform->scale    = glm::vec3(0.25f);
-    forward             = glm::vec3(0.0f, 1.0f, 0.0f);
-    speed               = cubeSpeed;
-    bounds              = glm::vec2(1.f, -1.f);
-    angle               = glm::vec3(50.0f, 50.0f, 0.0f);
+    transform->scale = glm::vec3(0.25f);
+    forward = glm::vec3(0.0f, 1.0f, 0.0f);
+    speed = cubeSpeed;
+    bounds = glm::vec2(1.f, -1.f);
+    angle = glm::vec3(50.0f, 50.0f, 0.0f);
 }
 
 void Cube::Update(float dt)
@@ -54,21 +54,12 @@ void Cube::Update(float dt)
     if (transform->rotation.y > maxAngle) transform->rotation.y -= maxAngle;
 
     //Movement
-    transform->position = transform->position + forward * speed * dt;
+    transform->position += forward * speed * dt;
     if (transform->position.y >= bounds.x || transform->position.y <= bounds.y)
-        forward = forward * -1.f;
+        forward *= -1.f;
 }
 
 void Cube::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
-    glUseProgram(shaderProgram);
-
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(transform->GenerateTranslationMatrix(transform->position)));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(transform->GenerateRotationMatrix(glm::vec3(0, 1, 0), transform->rotation.y)));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(transform->GenerateScaleMatrix(transform->scale)));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-
-    glDisable(GL_CULL_FACE);
-    meshRenderer->Draw(vertexCount);
-    glEnable(GL_CULL_FACE);
+    meshRenderer->Draw(shaderProgram, transform->GetTranslationMatrix(), transform->GetRotationMatrix(), transform->GetScaleMatrix(), viewMatrix, projectionMatrix, vertexCount);
+    glUniform1f(glGetUniformLocation(shaderProgram, "windowHeight"), (float)WINDOW_HEIGHT);
 }

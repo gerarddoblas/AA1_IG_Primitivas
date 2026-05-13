@@ -6,12 +6,13 @@
 class GameObject
 {
 protected:
-	Transform*    transform    = nullptr;
+	Transform* transform = nullptr;
 	MeshRenderer* meshRenderer = nullptr;
 
 public:
-	bool  isVisible = true;
+	bool isVisible = true;
 	float speed = 1.0f;
+	bool isPendingDestroy = false;
 
 	GameObject();
 	virtual ~GameObject();
@@ -20,6 +21,6 @@ public:
 
 	virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
 
-	Transform* GetTransform()    const { return transform; }
+	Transform* GetTransform() const { return transform; }
 	MeshRenderer* GetMeshRenderer() const { return meshRenderer; }
 };
