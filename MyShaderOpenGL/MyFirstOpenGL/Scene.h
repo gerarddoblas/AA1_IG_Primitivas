@@ -50,7 +50,7 @@ public:
 	}
 
 	virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
-		// El render de la escena simplemente le pide a cada objeto que se dibuje
+		// Le pidimos a cada objeto que se dibuje
 		for (GameObject* o : objects) {
 			if (o != nullptr && o->isVisible) {
 				o->Render(viewMatrix, projectionMatrix);
