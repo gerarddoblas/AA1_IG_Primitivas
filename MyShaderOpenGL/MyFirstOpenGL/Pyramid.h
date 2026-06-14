@@ -14,12 +14,12 @@ public:
 private:
 	GLuint shaderProgram = 0;
 
-	// Propiedades de movimiento
+	// movimiento
 	glm::vec3 forward = glm::vec3(0.f);
 	glm::vec2 bounds  = glm::vec2(0.f);
 	glm::vec3 angle   = glm::vec3(0.f);
 
-	// Propiedades de color ciclico
+	// color ciclico
 	float colorTime  = 0.0f;
 	short colorIndex = 0;
 
