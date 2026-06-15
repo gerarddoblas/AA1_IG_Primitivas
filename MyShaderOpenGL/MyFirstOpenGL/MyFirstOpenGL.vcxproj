@@ -26,7 +26,6 @@
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Ortoedro.cpp" />
-    <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -46,7 +45,6 @@
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Ortoedro.h" />
-    <ClInclude Include="Primitive.h" />
     <ClInclude Include="Pyramid.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Transform.h" />
