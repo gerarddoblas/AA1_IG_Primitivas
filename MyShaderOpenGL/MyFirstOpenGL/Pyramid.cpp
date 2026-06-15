@@ -10,7 +10,7 @@ Pyramid::Pyramid()
 
 void Pyramid::Init()
 {
-	// Se cargan los shaders a través del RenderManager
+	// Se cargan los shaders a traves del RenderManager
     RenderManager::ShaderProgram shaders;
     shaders.vertexShader   = RM->LoadVertexShader("MyFirstVertexShader.glsl");
     shaders.fragmentShader = RM->LoadFragmentShader("PyramidFragmentShader.glsl");
