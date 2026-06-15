@@ -1,119 +1,77 @@
 ﻿#include "Ortoedro.h"
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
+#include "RenderManager.h"
 
 Ortoedro::Ortoedro()
 {
 	Init();
 }
 
-
-
 void Ortoedro::Init()
 {
-	shader.vertexShader = LoadVertexShader("MyFirstVertexShader.glsl");
-	shader.geometryShader = LoadGeometryShader("MyFirstGeometryShader.glsl");
-	shader.fragmentShader = LoadFragmentShader("MyFirstFragmentShader.glsl");
-	shaderProgram = CreateProgram(shader);
+    RenderManager::ShaderProgram shaders;
+    shaders.vertexShader = RM->LoadVertexShader("MyFirstVertexShader.glsl");
+    shaders.fragmentShader = RM->LoadFragmentShader("MyFirstFragmentShader.glsl");
+    shaderProgram = RM->CreateProgram(shaders);
 
 	float vertices[] = {
-		// frente 
+        // frente 
 		-0.3f, -0.8f, -0.3f,  0.3f, -0.8f, -0.3f,  0.3f,  0.8f, -0.3f,
 		 0.3f,  0.8f, -0.3f, -0.3f,  0.8f, -0.3f, -0.3f, -0.8f, -0.3f,
-
-		 // atras 
+         // atras 
 		  0.3f, -0.8f,  0.3f, -0.3f, -0.8f,  0.3f, -0.3f,  0.8f,  0.3f,
 		 -0.3f,  0.8f,  0.3f,  0.3f,  0.8f,  0.3f,  0.3f, -0.8f,  0.3f,
-
-		 // abajo
+         // abajo
 		 -0.3f, -0.8f,  0.3f,  0.3f, -0.8f,  0.3f,  0.3f, -0.8f, -0.3f,
 		  0.3f, -0.8f, -0.3f, -0.3f, -0.8f, -0.3f, -0.3f, -0.8f,  0.3f,
-
-		  // arriba 
+          // arriba 
 		  -0.3f,  0.8f, -0.3f,  0.3f,  0.8f, -0.3f,  0.3f,  0.8f,  0.3f,
 		   0.3f,  0.8f,  0.3f, -0.3f,  0.8f,  0.3f, -0.3f,  0.8f, -0.3f,
-
-		   // izquierda 
+           // izquierda 
 		   -0.3f, -0.8f,  0.3f, -0.3f, -0.8f, -0.3f, -0.3f,  0.8f, -0.3f,
 		   -0.3f,  0.8f, -0.3f, -0.3f,  0.8f,  0.3f, -0.3f, -0.8f,  0.3f,
-
-		   // derecha 
+           // derecha 
 			0.3f, -0.8f, -0.3f,  0.3f, -0.8f,  0.3f,  0.3f,  0.8f,  0.3f,
 			0.3f,  0.8f,  0.3f,  0.3f,  0.8f, -0.3f,  0.3f, -0.8f, -0.3f
-	};
+    };
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+    // Inicializamos el MeshRenderer
+    meshRenderer->Init(vertices, sizeof(vertices));
 
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
-
-	//Transform
-	position = glm::vec3(0.0f, 0.0f, 0.0f);
-	rotation = glm::vec3(0.0f, 45.0f, 0.0f);
-	scale = glm::vec3(ortoedroScale);
-	speed = ortoedroSpeed;
+    //Transform
+    transform->position = glm::vec3(0.0f);
+    transform->rotation = glm::vec3(0.0f);
+    transform->scale = glm::vec3(0.35f);
 }
 
 void Ortoedro::Update(float dt)
 {
-	// Rotamos 
-	rotation.z += rotationSpeed * speed * dt;
+    // Rotamos eje Z
+    transform->rotation.z += rotationSpeed * dt;
+    if (transform->rotation.z >= circle) transform->rotation.z -= circle;
 
-	if (rotation.z > circle) rotation.z -= circle;
+    // inclino para ver 3d
+    transform->rotation.x = 25.0f;
+    transform->rotation.y = 25.0f;
 
 	// Sumamos tiempo para la inteerpolacion
-	timeAccumulator += dt;
+    timeAccumulator += dt;
 
-	
+    // Interpolamos entre minimo del ortoedro y el maximo
 	float cubeScaledForAnim = ortoedroWidth / ortoedroHeight;
-
 	float maxScaleY = ortoedroScale;
 	float minScaleY = ortoedroScale * cubeScaledForAnim;
 
-	
-	float wave = (sin(timeAccumulator * animSpeed * speed) + waveOffset) / waveScale;
+	float wave = (sin(timeAccumulator * animSpeed) + waveOffset) / waveScale;
 
 	// Interpolo escala.y
-	scale.y = minScaleY + (maxScaleY - minScaleY) * wave;
+	transform->scale.y = minScaleY + (maxScaleY - minScaleY) * wave;
 }
 
 void Ortoedro::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 {
-	//Indicar a la tarjeta GPU que programa debe usar
-	glUseProgram(shaderProgram);
-
-	//Genero matrices de transformacion (model)
-	glm::mat4 translationMatrix = GenerateTranslationMatrix(position);
-	
-	//Rotamos
-	glm::mat4 rotationMatrixX = GenerateRotationMatrix(glm::vec3(1.f, 0.f, 0.f), rotation.x);
-	glm::mat4 rotationMatrixY = GenerateRotationMatrix(glm::vec3(0.f, 1.f, 0.f), rotation.y);
-	glm::mat4 rotationMatrixZ = GenerateRotationMatrix(glm::vec3(0.f, 0.f, 1.f), rotation.z);
-	glm::mat4 rotationMatrix = rotationMatrixX * rotationMatrixY * rotationMatrixZ;
-	
-	glm::mat4 scaleMatrix = GenerateScaleMatrix(scale);
-
-	//Pasamos las variables del shader
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix));
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix));
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix));
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-
-	//Definimos que queremos usar el VAO con los puntos
-	glBindVertexArray(VAO);
-	
-	//Definimos que queremos dibujar
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-
-	//Dejamos de usar el VAO indicado anteriormente
-	glBindVertexArray(0);
-	glUseProgram(0);
+    // Usar el draw para renderizar y el uniform para saber el centro de la window
+    meshRenderer->Draw(shaderProgram, transform->GetTranslationMatrix(), transform->GetRotationMatrix(), transform->GetScaleMatrix(), viewMatrix, projectionMatrix, vertexCount);
+    glUniform1f(glGetUniformLocation(shaderProgram, "windowHeight"), (float)WINDOW_HEIGHT);
 }

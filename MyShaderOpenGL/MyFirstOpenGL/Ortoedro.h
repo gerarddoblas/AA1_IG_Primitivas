@@ -1,10 +1,9 @@
 #pragma once
-#include "Primitive.h"
-class Ortoedro : public Primitive
+#include "GameObject.h"
+
+class Ortoedro : public GameObject
 {
-
 public:
-
 	Ortoedro();
 
 	void Init();
@@ -12,13 +11,7 @@ public:
 	void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
 private:
-	GLuint VAO, VBO;
-	GLuint shaderProgram;
-	ShaderProgram shader;
-
-	glm::vec3 position = glm::vec3(0.f);
-	glm::vec3 rotation = glm::vec3(0.f);
-	glm::vec3 scale = glm::vec3(1.f);
+	GLuint shaderProgram = 0;
 
 	float timeAccumulator = 0.0f;
 
@@ -36,4 +29,3 @@ private:
 	const float waveOffset = 1.0f;
 	const float waveScale = 2.0f;
 };
-
