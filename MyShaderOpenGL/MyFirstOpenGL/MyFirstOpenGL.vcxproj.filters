@@ -30,9 +30,6 @@
     <ClCompile Include="Source.cpp">
       <Filter>Archivos de recursos</Filter>
     </ClCompile>
-    <ClCompile Include="Primitive.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
     <ClCompile Include="Ortoedro.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
@@ -77,9 +74,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Primitive.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="Ortoedro.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
